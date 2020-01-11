@@ -54,7 +54,7 @@ namespace DrDocx_Core.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind()] Patient patient)
+        public async Task<IActionResult> Create([Bind("Diagnosis,Name,PreferredName,Address,Medications,DateOfBirth,DateOfTesting,Notes,MedicalRecordNumber,AgeAtTesting,Id")] Patient patient)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace DrDocx_Core.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind()] Patient patient)
+        public async Task<IActionResult> Edit(int id, [Bind("Diagnosis,Name,PreferredName,Address,Medications,DateOfBirth,DateOfTesting,Notes,MedicalRecordNumber,AgeAtTesting,Id")] Patient patient)
         {
             if (id != patient.Id)
             {
