@@ -54,7 +54,7 @@ namespace DrDocx_Core.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Diagnosis,Id")] Patient patient)
+        public async Task<IActionResult> Create([Bind("Prefix=Patient")] Patient patient, [Bind("Prefix=PatientInfo")] PatientInfo patientInfo)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace DrDocx_Core.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Diagnosis,Id")] Patient patient)
+        public async Task<IActionResult> Edit(int id, [Bind("Prefix=Patient")] Patient patient, [Bind("Prefix=PatientInfo")] PatientInfo patientInfo)
         {
             if (id != patient.Id)
             {
@@ -98,11 +98,12 @@ namespace DrDocx_Core.Controllers
                 try
                 {
                     _context.Update(patient);
+                    _context.Update(patientInfo);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PatientExists(patient.Id))
+                    if (!PatientExists(patient.Id) || !PatientInfoExists(patientInfo.Id))
                     {
                         return NotFound();
                     }
@@ -148,6 +149,11 @@ namespace DrDocx_Core.Controllers
         private bool PatientExists(int id)
         {
             return _context.Patients.Any(e => e.Id == id);
+        }
+
+        private bool PatientInfoExists(int id)
+        {
+            return _context.PatientInfo.Any(e => e.Id == id);
         }
     }
 }
