@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
+using ElectronNET.API;
 
 namespace DrDocx_Core
 {
@@ -23,5 +23,13 @@ namespace DrDocx_Core
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            return Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+                .UseElectron(args)
+                .Build();
+        }
     }
 }
