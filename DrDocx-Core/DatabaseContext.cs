@@ -34,7 +34,5 @@ namespace DrDocx_Core
                 .WithMany(t => t.TestGroupTests)
                 .HasForeignKey(tgt => tgt.TestId);
         }
-
-        public DbSet<DrDocx_Core.Models.PatientInfo> PatientInfo { get; set; }
     }
 }

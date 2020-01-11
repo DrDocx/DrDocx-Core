@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DrDocx_Core.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200111102606_CreateDbTables")]
-    partial class CreateDbTables
+    [Migration("20200111213604_ConsolidatePatientInfo")]
+    partial class ConsolidatePatientInfo
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,25 +19,6 @@ namespace DrDocx_Core.Migrations
                 .HasAnnotation("ProductVersion", "3.1.0");
 
             modelBuilder.Entity("DrDocx_Core.Models.Patient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Diagnosis")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("PatientInfoId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PatientInfoId");
-
-                    b.ToTable("Patients");
-                });
-
-            modelBuilder.Entity("DrDocx_Core.Models.PatientInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,6 +34,9 @@ namespace DrDocx_Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateOfTesting")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Diagnosis")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MedicalRecordNumber")
@@ -72,7 +56,7 @@ namespace DrDocx_Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PatientInfo");
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("DrDocx_Core.Models.Test", b =>
@@ -179,13 +163,6 @@ namespace DrDocx_Core.Migrations
                     b.HasIndex("TestGroupInfoId");
 
                     b.ToTable("TestResultGroups");
-                });
-
-            modelBuilder.Entity("DrDocx_Core.Models.Patient", b =>
-                {
-                    b.HasOne("DrDocx_Core.Models.PatientInfo", "PatientInfo")
-                        .WithMany()
-                        .HasForeignKey("PatientInfoId");
                 });
 
             modelBuilder.Entity("DrDocx_Core.Models.TestGroupTest", b =>

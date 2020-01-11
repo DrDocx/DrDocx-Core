@@ -14,14 +14,7 @@ namespace DrDocx_Core.Models
     public class Patient
     {
         public List<TestResultGroup> ResultGroups { get; set; }
-        public PatientInfo PatientInfo { get; set; }
         public string Diagnosis { get; set; }
-        public int Id { get; set; }
-    }
-
-    public class PatientInfo
-    {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string PreferredName { get; set; }
         public string Address { get; set; }
@@ -31,6 +24,7 @@ namespace DrDocx_Core.Models
         public string Notes { get; set; }
         public int MedicalRecordNumber { get; set; }
         public int AgeAtTesting { get; set; }
+        public int Id { get; set; }
     }
 
     public class TestResultGroup
