@@ -8,19 +8,19 @@ namespace DrDocx_Core.Models
 {
 
     /// <summary>
-    /// Summary description for DPatient
+    /// Summary description for Patient
     /// </summary>
     ///
     /// THIS WILL NOT WORK TIL EVERYTHINGS IN A PROJECT BECAUSE C# IS SPECIAL 
-    public class DPatient
+    public class Patient
     {
-        public List<DTestResultGroup> ResultGroups { get; set; }
-        public DPatientData Data { get; set; }
+        public List<TestResultGroup> ResultGroups { get; set; }
+        public PatientData Data { get; set; }
         public string Diagnosis { get; set; }
         public int Id { get; set; }
     }
 
-    public struct DPatientData
+    public struct PatientData
     {
         public string Name { get; set; }
         public string PreferredName { get; set; }
@@ -33,15 +33,15 @@ namespace DrDocx_Core.Models
         public int AgeAtTesting { get; set; }
     }
 
-    public struct DTestResultGroup
+    public struct TestResultGroup
     {
         public DTestGroup Data { get; set; }
-        public List<DTestResult> Tests { get; set; }
+        public List<TestResult> Tests { get; set; }
 
         public int Id { get; set; }
     }
 
-    public struct DTestResult
+    public struct TestResult
     {
         public int RawScore { get; set; }
         public int ScaledScore { get; set; }

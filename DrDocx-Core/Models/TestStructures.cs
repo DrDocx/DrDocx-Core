@@ -19,7 +19,7 @@ namespace DrDocx_Core.Models
         //}
     }
 
-    public struct DTestGroup
+    public struct TestGroup
     {
         public string Name;
         public string Description;
@@ -28,7 +28,7 @@ namespace DrDocx_Core.Models
         public int Id;
 
         // This can be used for when a test group doesn't have tests ready to populate it with
-        //public DTestGroup(string name, string description, int id)
+        //public TestGroup(string name, string description, int id)
         //{
         //    Name = name;
         //    Description = description;
@@ -36,7 +36,7 @@ namespace DrDocx_Core.Models
         //    Id = id;
         //}
 
-        //public DTestGroup(string name, string description, List<DTest> tests, int id)
+        //public TestGroup(string name, string description, List<DTest> tests, int id)
         //{
         //    Name = name;
         //    Description = description;
