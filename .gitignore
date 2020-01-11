@@ -1,3 +1,6 @@
 
 .vs/slnx.sqlite
 *.exe
+*.db-wal
+*.db-shm
+*.db-shm

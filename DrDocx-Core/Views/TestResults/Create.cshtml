@@ -1,0 +1,49 @@
+﻿@model DrDocx_Core.Models.TestResult
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>TestResult</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RawScore" class="control-label"></label>
+                <input asp-for="RawScore" class="form-control" />
+                <span asp-validation-for="RawScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScaledScore" class="control-label"></label>
+                <input asp-for="ScaledScore" class="form-control" />
+                <span asp-validation-for="ScaledScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ZScore" class="control-label"></label>
+                <input asp-for="ZScore" class="form-control" />
+                <span asp-validation-for="ZScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Percentile" class="control-label"></label>
+                <input asp-for="Percentile" class="form-control" />
+                <span asp-validation-for="Percentile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
