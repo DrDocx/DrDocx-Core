@@ -5,27 +5,27 @@ using System.Threading.Tasks;
 
 namespace DrDocx_Core.Models
 {
-    public struct DTest
+    public class Test
     {
-        public string TestName;
-        public string Description;
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public List<TestGroupTest> TestGroupTests { get; set; }
+        public int Id { get; set; }
 
-        public int Id;
-
-        //public DTest(string name, string description)
+        //public Test(string name, string description)
         //{
-        //    TestName = name;
+        //    Name = name;
         //    Description = description;
         //}
     }
 
-    public struct TestGroup
+    public class TestGroup
     {
-        public string Name;
-        public string Description;
-        public List<DTest> Tests;
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public List<TestGroupTest> TestGroupTests { get; set; }
 
-        public int Id;
+        public int Id { get; set; }
 
         // This can be used for when a test group doesn't have tests ready to populate it with
         //public TestGroup(string name, string description, int id)
@@ -43,5 +43,14 @@ namespace DrDocx_Core.Models
         //    Tests = tests;
         //    Id = id;
         //}
+    }
+
+    public class TestGroupTest
+    {
+        public int Id { get; set; }
+        public Test Test { get; set; }
+        public int TestId { get; set; }
+        public TestGroup TestGroup { get; set; }
+        public int TestGroupId { get; set; }
     }
 }

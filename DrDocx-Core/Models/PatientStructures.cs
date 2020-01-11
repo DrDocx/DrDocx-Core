@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace DrDocx_Core.Models
 {
@@ -15,13 +14,14 @@ namespace DrDocx_Core.Models
     public class Patient
     {
         public List<TestResultGroup> ResultGroups { get; set; }
-        public PatientData Data { get; set; }
+        public PatientInfo PatientInfo { get; set; }
         public string Diagnosis { get; set; }
         public int Id { get; set; }
     }
 
-    public struct PatientData
+    public class PatientInfo
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string PreferredName { get; set; }
         public string Address { get; set; }
@@ -33,21 +33,21 @@ namespace DrDocx_Core.Models
         public int AgeAtTesting { get; set; }
     }
 
-    public struct TestResultGroup
+    public class TestResultGroup
     {
-        public DTestGroup Data { get; set; }
+        public TestGroup TestGroupInfo { get; set; }
         public List<TestResult> Tests { get; set; }
 
         public int Id { get; set; }
     }
 
-    public struct TestResult
+    public class TestResult
     {
         public int RawScore { get; set; }
         public int ScaledScore { get; set; }
         public int ZScore { get; set; }
         public int Percentile { get; set; }
-        public DTest RelatedTest { get; set; }
+        public Test RelatedTest { get; set; }
 
         public int ID { get; set; }
     }
