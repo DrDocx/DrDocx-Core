@@ -357,7 +357,7 @@ namespace ReportGen
                         Size = 0
                     }
                 ),
-                new TableWidth() { Type = TableWidthUnitValues.Pct, Width = "1700" }
+                new TableWidth() { Type = TableWidthUnitValues.Pct, Width = "4580" }
             );
             return tblProp;
         }
