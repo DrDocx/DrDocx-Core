@@ -60,7 +60,7 @@ namespace DrDocx_Core.Controllers
             {
                 _context.Add(patient);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Redirect("Details/" + patient.Id);
             }
             return View(patient);
         }

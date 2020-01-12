@@ -1,8 +1,104 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<DrDocx_Core.Models.Patient>
+
+@{
+    ViewData["Title"] = "DrDocX";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
+        <div class="mdl-layout__header-row">
+        </div>
+        <h3 style="margin-left: 10px; font-size: 34px; line-height: 40px;">Dr. Docx</h3>
+        <div class="mdl-layout__header-row">
+        </div>
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
+            <a href="#patients" class="mdl-layout__tab is-active">Patients</a>
+            <a href="#tests" class="mdl-layout__tab">Tests</a>
+            <a href="#analysis" class="mdl-layout__tab">Anaylsis</a>
+        </div>
+    </header>
+    <main class="mdl-layout__content">
+        <div class="mdl-layout__tab-panel is-active" id="patients">
+            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+                <div class="mdl-card mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card__supporting-text">
+                        <h3>Add a New Patient</h3>
+                        <a class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" asp-controller="Patients" asp-action="Create">
+                            <span class="mdl-list__item-primary-content">
+                                Add Patient
+                            </span>
+                            <span class="mdl-list__item-secondary-action">
+                                <i class="listing-action material-icons">chevron_right</i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+                <div class="mdl-card mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card__supporting-text">
+                        <h3>Existing Patients</h3>
+                        @foreach (var item in Model)
+                        {
+                            <a class="mdl-list__item mdl-button mdl-js-button setting-li" asp-controller="Patients" asp-action="Details" asp-route-id="@item.Id">
+                                <span class="mdl-list__item-primary-content">
+                                    @Html.DisplayFor(modelItem => item.Name) (@Html.DisplayFor(modelItem => item.PreferredName))
+                                </span>
+                                <span class="mdl-list__item-secondary-action">
+                                    <i class="listing-action material-icons">chevron_right</i>
+                                </span>
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="mdl-layout__tab-panel" id="tests">
+
+        </div>
+        <div class="mdl-layout__tab-panel" id="analysis">
+
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <footer class="mdl-mega-footer">
+            <div class="mdl-mega-footer--middle-section">
+                <div class="mdl-mega-footer--drop-down-section">
+                    <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
+                    <h1 class="mdl-mega-footer--heading">Features</h1>
+                    <ul class="mdl-mega-footer--link-list">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Partners</a></li>
+                        <li><a href="#">Updates</a></li>
+                    </ul>
+                </div>
+                <div class="mdl-mega-footer--drop-down-section">
+                    <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
+                    <h1 class="mdl-mega-footer--heading">Details</h1>
+                    <ul class="mdl-mega-footer--link-list">
+                        <li><a href="#">Spec</a></li>
+                        <li><a href="#">Tools</a></li>
+                        <li><a href="#">Resources</a></li>
+                    </ul>
+                </div>
+                <div class="mdl-mega-footer--drop-down-section">
+                    <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
+                    <h1 class="mdl-mega-footer--heading">Technology</h1>
+                    <ul class="mdl-mega-footer--link-list">
+                        <li><a href="#">How it works</a></li>
+                        <li><a href="#">Patterns</a></li>
+                        <li><a href="#">Usage</a></li>
+                        <li><a href="#">Products</a></li>
+                        <li><a href="#">Contracts</a></li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </main>
 </div>
