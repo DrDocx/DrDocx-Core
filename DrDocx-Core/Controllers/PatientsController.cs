@@ -255,7 +255,7 @@ namespace DrDocx_Core.Controllers
             var reportFileName = "Patient-" + strippedPatientName;
             var reportPath = workingDir.Name + reportFileName;
             var reportStaticPath = projectDirectory + "/wwwroot/reports" + reportFileName;
-            var visualizationsDirectory = workingDir.CreateSubdirectory("visualizations");
+            var visualizationsDirectory = reportGenDirectory + "/visualizations";
 
             await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir, reportGenDirectory, visualizationsDirectory));
             await CombineReportAndVisualizations(reportPath, visualizationsDirectory);
@@ -290,7 +290,7 @@ namespace DrDocx_Core.Controllers
             await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements, testGroups);
         }
 
-        private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, DirectoryInfo visualizationsDir)
+        private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, string visualizationsDir)
         {
             var v = new PatientViewModel
             {
@@ -318,14 +318,14 @@ namespace DrDocx_Core.Controllers
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "python.exe";
             startInfo.WorkingDirectory = reportGenDirectory;
-            startInfo.Arguments = $"chartGen.py {resultJsonPath} {visualizationsDir.FullName}";
+            startInfo.Arguments = $"chartGen.py {resultJsonPath} {visualizationsDir}";
             process.StartInfo = startInfo;
             process.Start();
         }
 
-        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, DirectoryInfo visualizationDir)
+        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationDir)
         {
-            var imagesInVisualizationDir = Directory.GetFiles(visualizationDir.FullName, "*.png");
+            var imagesInVisualizationDir = Directory.GetFiles(visualizationDir, "*.png");
             await ReportGen.ReportGen.CombineReportAndVisualizations(reportSansVisualsPath, imagesInVisualizationDir);
         }
 
