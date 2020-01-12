@@ -3,6 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import json
+import sys
+from colorama import init, Fore
+from PIL import Image
+import matplotlib.image as mpimg
+import random	
+import math
+
+
+init() #colorama
 
 
 #Test results will contain tuples of the tests results rom the ingest engine
@@ -13,14 +22,26 @@ _TestGroups = []
 _decodedJson = dict()
 _localDir = ""
 
+_count = 0.0
+_totalDotsH = 0.0
+
 DEBUG = False
 SHOWCHART = False
+BOGUSVALS = True
+FIRSTPAGE = True
+DONE = False
+PAGECOUNT = 1
 
 def main():
-	print("Running Visualization Tool")
+	global DONE 
+
+	print(Fore.GREEN + "Generating Table")
 	ingestDataFile()
 	generateChart()
-	saveChart()
+	#saveChart()
+	print(Fore.BLUE + "Generating Image Page	")
+	#loadNormalCurve()
+	concatImages()
 
 #Assume the data file is in the same directory with name dataFile.txt
 def ingestDataFile():
@@ -46,6 +67,9 @@ def generateChart():
 	global DEBUG
 	global _decodedJson
 	global SHOWCHART
+	global _count
+	global BOGUSVALS
+	global PAGECOUNT
 
 	print("Generating Chart")
 
@@ -62,7 +86,7 @@ def generateChart():
 	_colors = []
 
 	for _cat in _categories:
-		_xList.append(r"$\bf{" + str(_cat.replace(" ", "")) + "}$") #magic, don't touch
+		_xList.append(r"$\bf{" + str(_cat.replace(" ", "\ ")) + "}$") #magic, don't touch
 		_yList.append(0)
 		_colors.append('black')
 
@@ -73,6 +97,8 @@ def generateChart():
 		for index in range(0, len(_testList)):
 			_testName = _testList[index]
 			_testVal = _decodedJson[_cat][_testList[index]]
+			if BOGUSVALS:
+				_testVal = random.randint(-4, 4)
 			_xList.append(_testName)
 			_yList.append(_testVal)
 			_colors.append(getColor(_testVal))
@@ -86,28 +112,40 @@ def generateChart():
 	_yList.pop()
 	_colors.pop()
 
+	while not len(_xList) % 36 == 0:
+		_xList.append("")
+		_yList.append(0)
+		_colors.append('black')
+
 	if DEBUG:
 		print(_xList)
 		print(_yList)
 
-	_xList.reverse()
-	_yList.reverse()
-	_colors.reverse()
+	#_xList.reverse()
+	#_yList.reverse()
+	#_colors.reverse()
 
-	_yScal = np.arange(len(_xList))
-	plt.barh(_yScal, _yList, color = _colors, align='center', alpha=1, ls = '--', lw = 1)
-	plt.yticks(_yScal, _xList)
-	plt.xlim([-4, 4])
-	plt.grid(b=True, axis = 'x')
+	PAGECOUNT = math.ceil(len(_xList) / 36.0)
+	for page in range(1, PAGECOUNT + 1):
+		_tmpX = _xList[0 + 36 * (page - 1): 36 * page]
+		_tmpY = _yList[0 + 36 * (page - 1): 36 * page]
+		_tmpcolors = _colors[0 + 36 * (page - 1): 36 * page]
 
+		_tmpX.reverse()
+		_tmpY.reverse()
+		_tmpcolors.reverse()
 
-	frame1 = plt.gca()
-	#frame1.axes.get_xaxis().set_ticks([])
-
-	plt.tight_layout()
-
-	if SHOWCHART:
-		plt.show()
+		_count = len(_tmpX)
+		_yScal = np.arange(_count)
+		plt.barh(_yScal, _tmpY, color = _tmpcolors, align='center', alpha=1)
+		plt.yticks(_yScal, _tmpX, rotation = 35, fontsize = 10)
+		plt.xlim([-4, 4])
+		plt.grid(b=True, axis = 'x')
+		plt.subplots_adjust(left = 0.25)
+		#plt.tight_layout(pad = 0.5)
+	#	if SHOWCHART:
+	#		plt.show()
+		saveChart(page)
 
 def getColor(_val):
 	#color = 'green'
@@ -124,12 +162,57 @@ def getColor(_val):
 	return color
 
 
-def saveChart():
+def saveChart(pageNumber):
 	global _localDir
 
-	print("Saving Graph")
+	print(Fore.YELLOW + "Saving Graph " + str(pageNumber))
+	fig = plt.gcf()
+	fig.set_size_inches(8, 10.5)
+	fig.savefig(_localDir + "\\graph" + str(pageNumber) + ".png", tranparent=True, dpi = 300, orientation = 'portrait', pad_inches = 0)
+	plt.clf()
 
-	plt.savefig(_localDir + "\graph.png", tranparent=True)
+def loadNormalCurve():
+	print("Loading Curve Image")
+	img = mpimg.imread(_localDir + "\\NormalCurve.png")
+
+def concatImages():
+	global PAGECOUNT
+
+	for _page in range(1, PAGECOUNT + 1):
+		print(Fore.CYAN + "Generating Visualization Page " + str(_page))
+		_curve = Image.open(_localDir + "\\NormalCurveResized.png")
+		_table = Image.open(_localDir + "\\graph" + str(_page) + ".png")
+
+		_dest = Image.new('RGB', (_table.width, _table.height + _curve.height), (255, 255, 255))
+		_dest.paste(_table, (0, _curve.height - 500))
+		_dest.paste(_curve, (186, 0))
+
+		_dest = _dest.crop((0, 0, _dest.width, 300 * 10))
+		_dest.save(_localDir + "\\renderedVisualization" + str(_page) + ".png")
+
+	# print("PRINTING PAGE: " + str(PAGECOUNT))
+
+	# _curve = Image.open(_localDir + "\\NormalCurveResized.png")
+	# _table = Image.open(_localDir + "\\graph" + str(PAGECOUNT) + ".png")
+
+	# _dest = Image.new('RGB', (_table.width, _table.height + _curve.height), (255, 255, 255))
+
+	# _dest.paste(_table, (0, _curve.height - 150))
+	# _dest.paste(_curve, (55, 0))
+
+	# _dest = _dest.crop((0, 0, _dest.width, 300 * 10))
+	# _dest.save(_localDir + "\\finishedVisualization" + str(PAGECOUNT) + ".png")
+
+	# _cutoff = _table.height - (3000 - 601 - 150)
+	# print(_cutoff)
+	# if _cutoff <= 0: 
+	# 	DONE = True
+	# else:
+	# 	_table = _table.crop((0, _cutoff, _table.width, _table.height - _cutoff))
+	# 	_table.save(_localDir + "\\graph" + str(PAGECOUNT + 1) + ".png")
+
+	# FIRSTPAGE = False
+	# PAGECOUNT = PAGECOUNT + 1
 
 if __name__ == "__main__":
     main()
