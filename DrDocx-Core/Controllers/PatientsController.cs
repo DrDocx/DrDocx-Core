@@ -19,13 +19,7 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
-        // GET: Patients
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Patients.ToListAsync());
-        }
-
-        // GET: Patients/Details/5
+        // GET: Patients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -98,24 +92,6 @@ namespace DrDocx_Core.Controllers
                 }
                 return View(patient);
             }
-            return View(patient);
-        }
-
-        // GET: Patients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
-
             return View(patient);
         }
 

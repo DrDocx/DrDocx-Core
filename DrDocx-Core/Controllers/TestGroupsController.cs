@@ -19,36 +19,6 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
-        // GET: TestGroups
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.TestGroups.ToListAsync());
-        }
-
-        // GET: TestGroups/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var testGroup = await _context.TestGroups
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (testGroup == null)
-            {
-                return NotFound();
-            }
-
-            return View(testGroup);
-        }
-
-        // GET: TestGroups/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: TestGroups/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -58,86 +28,50 @@ namespace DrDocx_Core.Controllers
         {
             if (ModelState.IsValid)
             {
+                testGroup.TestGroupTests = new List<TestGroupTest>();
                 _context.Add(testGroup);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            return View(testGroup);
+            return RedirectToAction("Index", "Home");
         }
 
-        // GET: TestGroups/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var testGroup = await _context.TestGroups.FindAsync(id);
-            if (testGroup == null)
-            {
-                return NotFound();
-            }
-            return View(testGroup);
-        }
-
-        // POST: TestGroups/Edit/5
+        // POST: TestGroups/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Description,Id")] TestGroup testGroup)
+        public async Task<IActionResult> AddTest(int groupId, int testId)
         {
-            if (id != testGroup.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(testGroup);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TestGroupExists(testGroup.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(testGroup);
+            var testGroup = await _context.TestGroups.FindAsync(groupId);
+            var test = await _context.Tests.FindAsync(testId);
+            var testGroupTest = new TestGroupTest { TestGroup=testGroup, Test=test };
+            testGroup.TestGroupTests.Add(testGroupTest);
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction("Index", "Home");
         }
 
-        // GET: TestGroups/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+
+        // POST: TestGroups/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveTest(int groupId, int testGroupTestsId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var testGroup = await _context.TestGroups.FindAsync(groupId);
+            var testGroupTest = await _context.TestGroupTests.FindAsync(testGroupTestsId);
+            testGroup.TestGroupTests.Remove(testGroupTest);
+            await _context.SaveChangesAsync();
 
-            var testGroup = await _context.TestGroups
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (testGroup == null)
-            {
-                return NotFound();
-            }
-
-            return View(testGroup);
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: TestGroups/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var testGroup = await _context.TestGroups.FindAsync(id);
             _context.TestGroups.Remove(testGroup);
