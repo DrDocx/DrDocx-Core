@@ -93,8 +93,8 @@
                         <div class="mdl-cell mdl-cell--12-col  mdl-textfield mdl-js-textfield">
                             <textarea disabled class="mdl-textfield__input" form="form" type="text" rows="3" id="meds" asp-for="Patient.Medications">@Html.DisplayFor(model => model.Patient.Medications)</textarea>
                         </div>
-                        </div>
                     </div>
+                </div>
                     <div class="mdl-card__actions">
                         <a id="meds-button" class="mdl-button" onclick="toggleEdit('meds-button', ['meds'])">Edit Patient Medications</a>
                     </div>
