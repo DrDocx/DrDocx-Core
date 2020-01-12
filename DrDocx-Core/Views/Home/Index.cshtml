@@ -56,36 +56,62 @@
         <div class="mdl-card mdl-cell mdl-cell--12-col">
             <div class="mdl-card__supporting-text">
                 <h3>Add a New Test Group</h3>
-                <a class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" asp-controller="TestGroups" asp-action="Create">
-                    <span class="mdl-list__item-primary-content">
-                        Add Test Group
-                    </span>
-                    <span class="mdl-list__item-secondary-action">
-                        <i class="listing-action material-icons">chevron_right</i>
-                    </span>
-                </a>
-            </div>
-        </div>
-    </section>
-    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-        <div class="mdl-card mdl-cell mdl-cell--12-col">
-            <div class="mdl-card__supporting-text">
-                <h3>Existing Test Groups</h3>
-                @foreach (var item in tg)
-                {
-                    <a class="mdl-list__item mdl-button mdl-js-button setting-li" asp-controller="TestGroups" asp-action="Edit" asp-route-id="@item.Id">
+                <form asp-controller="TestGroups" asp-action="Create" method="POST">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input required name="Name" class="mdl-textfield__input" type="text" id="fname">
+                        <label class="mdl-textfield__label" for="fname">Test Name</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input required name="Description" class="mdl-textfield__input" type="text" id="desc">
+                        <label class="mdl-textfield__label" for="desc">Test Description</label>
+                    </div>
+                    <input type="submit" style="display: none" id="create-test" />
+                    <a onclick="document.getElementById('create-test').click()" class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                         <span class="mdl-list__item-primary-content">
-                            @Html.DisplayFor(modelItem => item.Name)
+                            Add Test Group
                         </span>
                         <span class="mdl-list__item-secondary-action">
                             <i class="listing-action material-icons">chevron_right</i>
                         </span>
                     </a>
-                }
-
+                </form>
             </div>
         </div>
     </section>
+    @foreach (var testGroup in tg)
+    {
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text">
+                    <h3>@Html.DisplayFor(model => testGroup.Name)</h3>
+                    @Html.DisplayFor(model => testGroup.Description)
+
+                    <table class="mdl-cell mdl-cell--12-col mdl-data-table mdl-js-data-table">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Test Name</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var testGroupTest in testGroup.TestGroupTests)
+                            {
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testGroupTest.Test.Name)</td>
+                                    <td>
+                                        <form asp-controller="TestGroups" asp-action="RemoveTest" asp-route-groupId="@testGroup.Id" asp-route-testGroupTestsId="@testGroupTest.Id" method="POST">
+                                            <input type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect" value="Remove" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </section>
+    }
 </div>
 <div class="mdl-layout__tab-panel" id="tests">
     <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
@@ -129,7 +155,6 @@
                     <tbody>
                         @foreach (var test in t)
                         {
-
                             <tr>
                                 <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => test.Name)</td>
                                 <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => test.Description)</td>

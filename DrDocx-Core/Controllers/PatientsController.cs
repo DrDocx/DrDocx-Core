@@ -25,12 +25,15 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
+<<<<<<< HEAD
+=======
         // GET: Patients
         public async Task<IActionResult> Index()
         {
             return View(await _context.Patients.ToListAsync());
         }
 
+>>>>>>> 2a1136ebb64ccbdd284662f6b8520a9a0b514624
         // GET: Patients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -148,24 +151,6 @@ namespace DrDocx_Core.Controllers
                 return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
             }
             return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
-        }
-
-        // GET: Patients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
-
-            return View(patient);
         }
 
         // POST: Patients/Delete/5
