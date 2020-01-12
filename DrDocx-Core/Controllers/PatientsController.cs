@@ -41,7 +41,7 @@ namespace DrDocx_Core.Controllers
             var test = await _context.Tests.FindAsync(testId);
 
             testResult.RelatedTest = test;
-
+            if (testResultGroup.Tests == null) testResultGroup.Tests = new List<TestResult>();
             testResultGroup.Tests.Add(testResult);
 
             _context.Add(testResult);
