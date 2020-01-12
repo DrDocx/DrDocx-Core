@@ -16,6 +16,10 @@ namespace DrDocx_Core.Controllers
     {
         public Patient Patient;
         public List<DrDocx_Core.Models.TestGroup> TestGroups;
+        public List<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
+        public List<DrDocx_Core.Models.TestResult> TestResults;
+        public List<DrDocx_Core.Models.Test> Tests;
+        public List<DrDocx_Core.Models.TestResultGroup> TestResultGroups;
     }
 
     public class PatientsController : Controller
@@ -27,65 +31,83 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
-        // GET: Patients/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // POST: Patients/AddTest/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTest(int patientId, int testResultGroupId, int testId, [Bind("RawScore,ScaledScore,ZScore,Percentile,ID")] TestResult testResult)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
+            var testResultGroup = await _context.TestResultGroups.FindAsync(testResultGroupId);
+            var test = await _context.Tests.FindAsync(testId);
 
-            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
+            testResult.RelatedTest = test;
+
+            testResultGroup.Tests.Add(testResult);
+
+            _context.Add(testResult);
+            await _context.SaveChangesAsync();
+
+            return Redirect("Edit/" + patientId);
         }
 
-        // GET: Patients/AddTest/5
-        public async Task<IActionResult> AddTest(int? id, string TestGroupName)
+        // POST: Patients/AddTest/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveTest(int patientId, int testResultGroupId, int testResultId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
+            var testResultGroup = await _context.TestResultGroups.FindAsync(testResultGroupId);
+            var testResult = await _context.TestResults.FindAsync(testResultId);
 
-            //patient.ResultGroups
+            testResultGroup.Tests.Remove(testResult);
+            _context.Remove(testResult);
+            await _context.SaveChangesAsync();
 
-            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
+            return Redirect("Edit/" + patientId);
         }
+
+
 
         // POST: TestResultGroups/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTestResultGroup(int testGroupId, int patientId)
+        [ValidateAntiForgeryToken] //TODO: BTW I remember deleting one of these things to do something hacky, idk where but you should make sure to put them back... -Nathan
+        public async Task<IActionResult> AddTestGroup(int testGroupId, int patientId)
         {
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(m => m.Id == patientId);
+            var patient = await _context.Patients.FindAsync(patientId);
             TestResultGroup trg = new TestResultGroup();
             trg.Tests = new List<TestResult>();
-            trg.TestGroupInfo = await _context.TestGroups
-                .FirstOrDefaultAsync(m => m.Id == testGroupId);
-            Console.WriteLine("patientId: " + patientId + ", patient: " + patient.Name + ", testGroupId: " + testGroupId);
+            trg.TestGroupInfo = await _context.TestGroups.FindAsync(testGroupId);
+            if(patient.ResultGroups == null) patient.ResultGroups = new List<TestResultGroup>();
+            patient.ResultGroups.Add(trg);
+
             if (ModelState.IsValid)
             {
                 _context.Add(trg);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
+            return Redirect("Edit/" + patientId);
+        }
+
+
+
+        // POST: TestResultGroups/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken] //TODO: BTW I remember deleting one of these things to do something hacky, idk where but you should make sure to put them back... -Nathan
+        public async Task<IActionResult> RemoveTestGroup(int testResultGroupId, int patientId)
+        {
+            var patient = await _context.Patients.FindAsync(patientId);
+            var testResultGroup = await _context.TestResultGroups.FindAsync(testResultGroupId);
+
+            patient.ResultGroups.Remove(testResultGroup);
+
+            _context.Remove(testResultGroup);
+            await _context.SaveChangesAsync();
+
+            return Redirect("Edit/" + patientId);
         }
 
         // GET: Patients/Create
@@ -110,6 +132,32 @@ namespace DrDocx_Core.Controllers
             return View(patient);
         }
 
+
+        // GET: Patients/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            return View(new PatientViewModel
+            {
+                Patient = patient,
+                Tests = await _context.Tests.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
+                TestResults = await _context.TestResults.ToListAsync(),
+            });
+        }
 
         // POST: Patients/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -141,9 +189,14 @@ namespace DrDocx_Core.Controllers
                         throw;
                     }
                 }
-                return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
             }
-            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
+            return View(new PatientViewModel { Patient = patient,
+                Tests = await _context.Tests.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
+                TestResults = await _context.TestResults.ToListAsync(),
+            });
         }
 
         // POST: Patients/Delete/5
