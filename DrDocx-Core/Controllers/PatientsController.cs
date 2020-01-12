@@ -10,6 +10,12 @@ using DrDocx_Core.Models;
 
 namespace DrDocx_Core.Controllers
 {
+    public struct PatientViewModel
+    {
+        public Patient Patient;
+        public List<DrDocx_Core.Models.TestGroup> TestGroups;
+    }
+
     public class PatientsController : Controller
     {
         private readonly DatabaseContext _context;
@@ -25,7 +31,7 @@ namespace DrDocx_Core.Controllers
             return View(await _context.Patients.ToListAsync());
         }
 
-        // GET: Patients/Details/5
+        // GET: Patients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -40,7 +46,27 @@ namespace DrDocx_Core.Controllers
                 return NotFound();
             }
 
-            return View(patient);
+            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
+        }
+
+        // GET: Patients/AddTest/5
+        public async Task<IActionResult> AddTest(int? id, string TestGroupName)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            //patient.ResultGroups
+
+            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
         }
 
         // GET: Patients/Create
@@ -96,9 +122,9 @@ namespace DrDocx_Core.Controllers
                         throw;
                     }
                 }
-                return View(patient);
+                return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
             }
-            return View(patient);
+            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
         }
 
         // GET: Patients/Delete/5
