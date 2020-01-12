@@ -212,12 +212,11 @@ namespace DrDocx_Core.Controllers
             });
         }
 
-        // POST: Patients/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        [HttpGet]
+        // GET: Patients/Delete/5
+        public async Task<IActionResult> Delete(int patientId)
         {
-            var patient = await _context.Patients.FindAsync(id);
+            var patient = await _context.Patients.FindAsync(patientId);
             _context.Patients.Remove(patient);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
