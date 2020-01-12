@@ -105,9 +105,9 @@
                             <label class="mdl-textfield__label" for="diag">Diagnosis</label>
                         </div>
                         <br>
-                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                        <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"  asp-route-patientId="@patient.Id" asp-controller="Patients" asp-action="DownloadPatientReport">
                             Download Report
-                        </button>
+                        </a>
                         <br>
                     </div>
                 </div>

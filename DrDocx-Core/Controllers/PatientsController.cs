@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrDocx_Core;
 using DrDocx_Core.Models;
+using System.IO;
+using System.Text.Json;
 
 namespace DrDocx_Core.Controllers
 {
@@ -158,6 +160,93 @@ namespace DrDocx_Core.Controllers
         private bool PatientExists(int id)
         {
             return _context.Patients.Any(e => e.Id == id);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPatientReport(int patientId)
+        {
+            if (!_context.Patients.Any(e => e.Id == patientId))
+            {
+                return NotFound();
+            }
+            var patient = await _context.Patients.FindAsync(patientId);
+            var link = await GeneratePatientReport(patient);
+            var net = new System.Net.WebClient();
+            var data = net.DownloadData(link);
+            var content = new System.IO.MemoryStream(data);
+            var contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            var fileName = $"Patient-{patient.Name}-{patient.DateOfTesting}";
+            return File(content, contentType, fileName);
+        }
+
+        private async Task<string> GeneratePatientReport(Patient patient)
+        {
+            // Create local report directory
+            var strippedPatientName = patient.Name.Replace(" ", "-");
+            var workingDir = Directory.CreateDirectory(@"tmp/reports/patient-" + strippedPatientName);
+            string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "/DrDocx-Core/DrDocx-Core";
+            var reportGenDirectory = projectDirectory + "/report-gen";
+            var reportTemplatePath = reportGenDirectory + "/Report_Template.dotx";
+            var reportFileName = "Patient-" + strippedPatientName;
+            var reportPath = workingDir.Name + reportFileName;
+            var reportStaticPath = projectDirectory + "/wwwroot/reports" + reportFileName;
+            var visualizationsDirectory = workingDir.CreateSubdirectory("visualizations");
+
+            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir, reportGenDirectory, visualizationsDirectory));
+            await CombineReportAndVisualizations(reportPath, visualizationsDirectory.Name);
+            bool readyToDelete = await ServeGeneratedReportStatically(reportPath, reportStaticPath);
+            workingDir.Delete(readyToDelete);
+            return reportStaticPath;
+        }
+
+        private async Task GenerateReportSansVisuals(Patient patient, string templatePath, string reportPath)
+        {
+            Dictionary<string, string> templateReplacements = new Dictionary<string, string>
+            {
+                { "NAME", patient.Name },
+                { "PREFERRED_NAME", patient.PreferredName },
+                { "MEDICATIONS", patient.Medications },
+                { "ADDRESS", patient.Address },
+                { "MEDICAL RECORD NUMBER", patient.MedicalRecordNumber.ToString() },
+                { "AGE_AT_TESTING", "19" }, // Hardcoded as calculation method does not yet exist
+                { "TEST_DATE", patient.DateOfTesting.ToString() }
+            };
+
+            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements);
+        }
+
+        private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, DirectoryInfo visualizationsDir)
+        {
+            var resultGroups = patient.ResultGroups;
+            var trgDict = new Dictionary<string, List<TestResult>>();
+            foreach (var trGroup in resultGroups)
+            {
+                trgDict.Add(trGroup.TestGroupInfo.Name, trGroup.Tests);
+            }
+            var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict);
+            var resultJsonPath = tmpDir + "/test-result-data.json";
+            System.IO.File.WriteAllText(resultJsonPath, output);
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = $"python chartGen.py {resultJsonPath} {visualizationsDir.FullName}";
+            startInfo.WorkingDirectory = reportGenDirectory;
+            process.StartInfo = startInfo;
+            process.Start();
+        }
+
+        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationsDirectoryPath)
+        {
+            var imagesInVisualizationDir = Directory.GetFiles(visualizationsDirectoryPath, "*.png");
+
+        }
+
+        private async Task<bool> ServeGeneratedReportStatically(string reportGenPath, string reportStaticPath)
+        {
+            System.IO.File.Copy(reportGenPath, reportStaticPath);
+            return true;
         }
     }
 }
