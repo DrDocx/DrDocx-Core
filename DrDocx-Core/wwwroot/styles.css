@@ -12,6 +12,7 @@ html, body {
 
 .mdl-layout__header-row {
   padding-left: 40px;
+  height: 100px;
 }
 .mdl-layout__tab-bar-button {
   display: none;
