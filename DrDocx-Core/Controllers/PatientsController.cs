@@ -282,7 +282,7 @@ namespace DrDocx_Core.Controllers
                 { "PREFERRED_NAME", patient.PreferredName },
                 { "MEDICATIONS", patient.Medications },
                 { "ADDRESS", patient.Address },
-                { "MEDICAL RECORD NUMBER", patient.MedicalRecordNumber.ToString() },
+                { "MEDICAL_RECORD_NUMBER", patient.MedicalRecordNumber.ToString() },
                 { "AGE_AT_TESTING", "19" }, // Hardcoded as calculation method does not yet exist
                 { "TEST_DATE", patient.DateOfTesting.ToString() }
             };
