@@ -27,19 +27,20 @@ _jsonPath = ""
 _count = 0.0
 _totalDotsH = 0.0
 
-DEBUG = False
+DEBUG = True
 SHOWCHART = False
 BOGUSVALS = True
 FIRSTPAGE = True
 DONE = False
-AUTOPATH = False
+AUTOPATH = True
 PAGECOUNT = 1
 
 def main():
 	global DONE 
 	global _jsonPath
 
-	_jsonPath = sys.argv[1]
+	if len(sys.argv) < 1:
+		_jsonPath = sys.argv[1]
 
 	print(Fore.GREEN + "Generating Table")
 	ingestDataFile()
@@ -62,7 +63,7 @@ def ingestDataFile():
 		print("Local Directory is: " + _localDir)
 
 	if AUTOPATH: 
-		_dataFilePath = _localDir + "\dataFile.json"
+		_dataFilePath = _localDir + "\data.json"
 	else: 
 		_dataFilePath = _jsonPath
 	_dataFile = open(_dataFilePath, "r") #read only access of the data file
@@ -87,6 +88,8 @@ def generateChart():
 	for _key in _decodedJson.keys():
 		_categories.append(_key)
 
+	print(_categories)
+
 	if DEBUG:
 		print("Categories: ")
 		print(_categories)
@@ -100,13 +103,13 @@ def generateChart():
 		_yList.append(0)
 		_colors.append('black')
 
-		_testList = []
-		for _key in _decodedJson[_cat].keys():
-			_testList.append(_key)
-
-		for index in range(0, len(_testList)):
-			_testName = _testList[index]
-			_testVal = _decodedJson[_cat][_testList[index]]
+		# _testList = []
+		# for _key in _decodedJson[_cat].keys():
+		# 	_testList.append(_key)
+		
+		for index in range(0, len(_decodedJson[_cat])):
+			_testName = _decodedJson[_cat][index]['RelatedTest']['Name']
+			_testVal = _decodedJson[_cat][index]['ZScore']
 			if BOGUSVALS:
 				_testVal = random.uniform(-5,5)
 			_xList.append(_testName)
