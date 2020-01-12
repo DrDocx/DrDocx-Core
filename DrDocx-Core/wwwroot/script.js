@@ -24,3 +24,36 @@ function editTable(buttonId, rowSelector) {
   }
   butt.onclick = submitForm;
 }
+
+window.addEventListener("load", function () {
+    let tabs = document.getElementById("tabs").children;
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].addEventListener("click", function () {
+            document.cookie = "tab=" + i;
+        });
+    }
+    let goalTab = parseInt(getCookie("tab"));
+    console.log(goalTab);
+    console.log(tabs);
+    console.log(tabs[goalTab]);
+    if (goalTab) {
+        tabs[goalTab].click();
+    }
+});
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
