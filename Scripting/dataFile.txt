@@ -1,0 +1,11 @@
+{
+  "PROCESSING SPEED": {
+    "W4 Sym Sea": 2
+  },
+  "ATTENTION": {
+    "W4-DSFd": -1,
+    "W4-DSBk": 1,
+    "W4-DSBSeq": 0,
+    "W4-DSBSeq2": 1
+  }
+}

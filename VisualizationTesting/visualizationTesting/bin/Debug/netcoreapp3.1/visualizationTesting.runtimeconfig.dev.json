@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\legom\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\legom\\.nuget\\packages"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\visualizationTesting.exe
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\visualizationTesting.deps.json
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\visualizationTesting.runtimeconfig.json
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\visualizationTesting.runtimeconfig.dev.json
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\visualizationTesting.dll
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\visualizationTesting.pdb
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\obj\Debug\netcoreapp3.1\visualizationTesting.csprojAssemblyReference.cache
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\obj\Debug\netcoreapp3.1\visualizationTesting.AssemblyInfoInputs.cache
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\obj\Debug\netcoreapp3.1\visualizationTesting.AssemblyInfo.cs
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\obj\Debug\netcoreapp3.1\visualizationTesting.dll
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\obj\Debug\netcoreapp3.1\visualizationTesting.pdb
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\bin\Debug\netcoreapp3.1\System.Windows.Forms.DataVisualization.dll
+C:\Users\legom\source\repos\DrDocx\DrDocx-Core\VisualizationTesting\visualizationTesting\obj\Debug\netcoreapp3.1\visualizationTesting.csproj.CopyComplete
