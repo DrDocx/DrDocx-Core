@@ -19,36 +19,6 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
-        // GET: TestResults
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.TestResults.ToListAsync());
-        }
-
-        // GET: TestResults/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var testResult = await _context.TestResults
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (testResult == null)
-            {
-                return NotFound();
-            }
-
-            return View(testResult);
-        }
-
-        // GET: TestResults/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: TestResults/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -61,22 +31,6 @@ namespace DrDocx_Core.Controllers
                 _context.Add(testResult);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            return View(testResult);
-        }
-
-        // GET: TestResults/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var testResult = await _context.TestResults.FindAsync(id);
-            if (testResult == null)
-            {
-                return NotFound();
             }
             return View(testResult);
         }
@@ -97,7 +51,9 @@ namespace DrDocx_Core.Controllers
             {
                 try
                 {
+
                     _context.Update(testResult);
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -113,24 +69,6 @@ namespace DrDocx_Core.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(testResult);
-        }
-
-        // GET: TestResults/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var testResult = await _context.TestResults
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (testResult == null)
-            {
-                return NotFound();
-            }
-
             return View(testResult);
         }
 
