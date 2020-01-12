@@ -23,20 +23,25 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("download")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetPatientReport(int patientId)
+        public async Task<IActionResult> DownloadPatientReport(int patientId)
         {
             if (!_context.Patients.Any(e => e.Id == patientId))
             {
                 return NotFound();
             }
             var patient = await _context.Patients.FindAsync(patientId);
-            await GeneratePatientReport(patient);
-            return NotFound();
+            var link = await GeneratePatientReport(patient);
+            var net = new System.Net.WebClient();
+            var data = net.DownloadData(link);
+            var content = new System.IO.MemoryStream(data);
+            var contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            var fileName = $"Patient-{patient.Name}-{patient.DateOfTesting}";
+            return File(content, contentType, fileName);
         }
 
-        private async Task GeneratePatientReport(Patient patient)
+        private async Task<string> GeneratePatientReport(Patient patient)
         {
             // Create local report directory
             var strippedPatientName = patient.Name.Replace(" ", "-");
@@ -53,6 +58,7 @@ namespace DrDocx_Core.Controllers
             await CombineReportAndVisualizations(reportPath, visualizationsDirectory.Name);
             bool readyToDelete = await ServeGeneratedReportStatically(reportPath, reportStaticPath);
             workingDir.Delete(readyToDelete);
+            return reportStaticPath;
         }
 
         private async Task GenerateReportSansVisuals(Patient patient, string templatePath, string reportPath)
