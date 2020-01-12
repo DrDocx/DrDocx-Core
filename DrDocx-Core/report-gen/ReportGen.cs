@@ -35,12 +35,14 @@ namespace ReportGen
                 using (WordprocessingDocument doc = WordprocessingDocument.Open(newFilePath, true))
                 {
                     doc.MainDocumentPart.Document.Body.AppendChild(p);
-                    CreateSubTable(newFilePath, testResultGroup.Tests);
+                }
+                CreateSubTable(newFilePath, testResultGroup.Tests);
+                using (WordprocessingDocument doc = WordprocessingDocument.Open(newFilePath, true))
+                {
                     Paragraph lineBreak = new Paragraph(new Run(new Text("\n")));
                     doc.MainDocumentPart.Document.Body.AppendChild(lineBreak);
                 }
-                
-                
+
             }
         }
 
