@@ -271,6 +271,8 @@ namespace DrDocx_Core.Controllers
         private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, DirectoryInfo visualizationsDir)
         {
             var resultGroups = patient.ResultGroups;
+            if (resultGroups.Count == 0)
+                return;
             var trgDict = new Dictionary<string, List<TestResult>>();
             foreach (var trGroup in resultGroups)
             {
