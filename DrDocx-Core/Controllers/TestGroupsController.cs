@@ -28,7 +28,6 @@ namespace DrDocx_Core.Controllers
         {
             if (ModelState.IsValid)
             {
-                testGroup.TestGroupTests = new List<TestGroupTest>();
                 _context.Add(testGroup);
                 await _context.SaveChangesAsync();
             }
@@ -43,12 +42,10 @@ namespace DrDocx_Core.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddTest(int groupId, int testId)
         {
-            var testGroup = await _context.TestGroups.FindAsync(groupId);
-            var test = await _context.Tests.FindAsync(testId);
-            var testGroupTest = new TestGroupTest { TestGroup=testGroup, Test=test };
-            testGroup.TestGroupTests.Add(testGroupTest);
+            var testGroupTest = new TestGroupTest { TestGroupId=groupId, TestId=testId };
+            _context.Add(testGroupTest);
             await _context.SaveChangesAsync();
-            
+          
             return RedirectToAction("Index", "Home");
         }
 
@@ -58,11 +55,11 @@ namespace DrDocx_Core.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveTest(int groupId, int testGroupTestsId)
+        public async Task<IActionResult> RemoveTest(int groupId, int testId)
         {
             var testGroup = await _context.TestGroups.FindAsync(groupId);
-            var testGroupTest = await _context.TestGroupTests.FindAsync(testGroupTestsId);
-            testGroup.TestGroupTests.Remove(testGroupTest);
+            var testGroupTest = await _context.TestGroupTests.FindAsync(testId, groupId);
+            _context.Remove(testGroupTest);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");

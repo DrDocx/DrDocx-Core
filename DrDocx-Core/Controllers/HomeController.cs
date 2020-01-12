@@ -14,6 +14,7 @@ namespace DrDocx_Core.Controllers
     {
         public IEnumerable<DrDocx_Core.Models.Patient> Patients;
         public IEnumerable<DrDocx_Core.Models.TestGroup> TestGroups;
+        public IEnumerable<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
         public IEnumerable<DrDocx_Core.Models.Test> Tests;
     }
 
@@ -31,6 +32,7 @@ namespace DrDocx_Core.Controllers
             return View(new HomeViewModel {
                 Patients = await _context.Patients.ToListAsync(),
                 TestGroups = await _context.TestGroups.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
                 Tests = await _context.Tests.ToListAsync()
             } );
         }

@@ -2,6 +2,7 @@
 @{
     var p = Model.Patients;
     var tg = Model.TestGroups;
+    var tgt = Model.TestGroupTests;
     var t = Model.Tests;
 }
 
@@ -65,15 +66,7 @@
                         <input required name="Description" class="mdl-textfield__input" type="text" id="desc">
                         <label class="mdl-textfield__label" for="desc">Test Description</label>
                     </div>
-                    <input type="submit" style="display: none" id="create-test" />
-                    <a onclick="document.getElementById('create-test').click()" class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                        <span class="mdl-list__item-primary-content">
-                            Add Test Group
-                        </span>
-                        <span class="mdl-list__item-secondary-action">
-                            <i class="listing-action material-icons">chevron_right</i>
-                        </span>
-                    </a>
+                    <input type="submit" class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="Add Test Group" />
                 </form>
             </div>
         </div>
@@ -94,12 +87,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var testGroupTest in testGroup.TestGroupTests)
+
+                            @if(testGroup.TestGroupTests != null) foreach (var testGroupTest in testGroup.TestGroupTests)
                             {
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testGroupTest.Test.Name)</td>
                                     <td>
-                                        <form asp-controller="TestGroups" asp-action="RemoveTest" asp-route-groupId="@testGroup.Id" asp-route-testGroupTestsId="@testGroupTest.Id" method="POST">
+                                        <form asp-controller="TestGroups" asp-action="RemoveTest" asp-route-groupId="@testGroup.Id" asp-route-testId="@testGroupTest.TestId" method="POST">
                                             <input type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect" value="Remove" />
                                         </form>
                                     </td>
@@ -107,7 +101,23 @@
                             }
                         </tbody>
                     </table>
-
+                    <div class="mdl-grid mdl-cell mdl-cell--12-col">
+                        <div class="mdl-layout-spacer"></div>
+                        <form asp-controller="TestGroups" asp-action="AddTest" asp-route-groupId="@testGroup.Id" id="form2">
+                            <select name="testId" class="mdl-cell mdl-cell--5-col mdl-button mdl-button--raised " id="new-test-group">
+                                 @foreach (var test in t)
+                                  {
+                                     @if (testGroup.TestGroupTests == null || !testGroup.TestGroupTests.Any(testGroupTest => testGroupTest.Test == test))
+                                     {
+                                       <option value="@test.Id">@Html.DisplayFor(modelItem => test.Name)</option>
+                                     }
+                                  }
+                            </select>
+                            <div class="mdl-layout-spacer"></div>
+                            <input type="submit" class="setting-li mdl-cell mdl-cell--5-col mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="Add Test"/>
+                        </form>
+                        <div class="mdl-layout-spacer"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -127,15 +137,7 @@
                         <input required name="Description" class="mdl-textfield__input" type="text" id="desc">
                         <label class="mdl-textfield__label" for="desc">Test Description</label>
                     </div>
-                    <input type="submit" style="display: none" id="create-test"/>
-                    <a onclick="document.getElementById('create-test').click()" class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                    <span class="mdl-list__item-primary-content">
-                        Add Test
-                    </span>
-                    <span class="mdl-list__item-secondary-action">
-                        <i class="listing-action material-icons">chevron_right</i>
-                    </span>
-                    </a>
+                    <input type="submit" class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="Add Test" />
                 </form>
             </div>
         </div>

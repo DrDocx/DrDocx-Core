@@ -25,15 +25,6 @@ namespace DrDocx_Core.Controllers
             _context = context;
         }
 
-<<<<<<< HEAD
-=======
-        // GET: Patients
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Patients.ToListAsync());
-        }
-
->>>>>>> 2a1136ebb64ccbdd284662f6b8520a9a0b514624
         // GET: Patients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

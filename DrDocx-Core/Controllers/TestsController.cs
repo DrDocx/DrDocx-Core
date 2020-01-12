@@ -27,7 +27,6 @@ namespace DrDocx_Core.Controllers
         {
             if (ModelState.IsValid)
             {
-                test.TestGroupTests = new List<TestGroupTest>();
                 _context.Add(test);
                 await _context.SaveChangesAsync();
             }
