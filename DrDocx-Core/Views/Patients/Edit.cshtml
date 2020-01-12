@@ -108,7 +108,7 @@
                             <label class="mdl-textfield__label" for="diag">Diagnosis</label>
                         </div>
                         <br>
-                        <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"  asp-route-patientId="@patient.Id" asp-controller="Patients" asp-action="DownloadPatientReport">
+                        <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" asp-route-patientId="@patient.Id" asp-controller="Patients" asp-action="DownloadPatientReport">
                             Download Report
                         </a>
                         <br>
@@ -116,6 +116,19 @@
                 </div>
                 <div class="mdl-card__actions">
                     <a id="anal-button" class="mdl-button" onclick="toggleEdit('anal-button', ['diag'])">Edit Diagnosis</a>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Delete</h4>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--red-500" asp-route-id="@patient.Id" asp-controller="Patients" asp-action="Delete">
+                            Delete Patient
+                        </a>
+                        <br>
+                    </div>
                 </div>
             </div>
         </section>
