@@ -58,7 +58,7 @@ namespace DrDocx_Core.Controllers
         public async Task<IActionResult> RemoveTest(int groupId, int testId)
         {
             var testGroup = await _context.TestGroups.FindAsync(groupId);
-            var testGroupTest = await _context.TestGroupTests.FindAsync(testId, groupId);
+            var testGroupTest = await _context.TestGroupTests.FindAsync(groupId, testId);
             _context.Remove(testGroupTest);
             await _context.SaveChangesAsync();
 
@@ -73,7 +73,7 @@ namespace DrDocx_Core.Controllers
             var testGroup = await _context.TestGroups.FindAsync(id);
             _context.TestGroups.Remove(testGroup);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool TestGroupExists(int id)
