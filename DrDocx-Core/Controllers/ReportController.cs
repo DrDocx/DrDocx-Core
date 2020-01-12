@@ -22,6 +22,9 @@ namespace DrDocx_Core.Controllers
         {
             _context = context;
         }
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetPatientReport(int patientId)
         {
             if (!_context.Patients.Any(e => e.Id == patientId))
@@ -33,23 +36,39 @@ namespace DrDocx_Core.Controllers
             return NotFound();
         }
 
-        private async Task<WordprocessingDocument> GeneratePatientReport(Patient patient)
+        private async Task GeneratePatientReport(Patient patient)
         {
             // Create local report directory
             var strippedPatientName = patient.Name.Replace(" ", "-");
-            var workingDir = Directory.CreateDirectory(@"reports/patient-" + strippedPatientName);
-            var tmpDir = workingDir.CreateSubdirectory("tmp");
+            var workingDir = Directory.CreateDirectory(@"tmp/reports/patient-" + strippedPatientName);
             string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
             var reportGenDirectory = projectDirectory + "/report-gen";
             var reportTemplatePath = reportGenDirectory + "/Report_Template.dotx";
-            var reportPath = tmpDir.Name + "Patient-" + strippedPatientName + patient.DateOfTesting;
-            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, tmpDir));
+            var reportFileName = "Patient-" + strippedPatientName + patient.DateOfTesting;
+            var reportPath = workingDir.Name + reportFileName;
+            var reportStaticPath = projectDirectory + "/wwwroot/reports" + reportFileName;
+            var visualizationsDirectory = workingDir.CreateSubdirectory("visualizations");
 
+            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir));
+            await CombineReportAndVisualizations(reportPath, visualizationsDirectory.Name);
+            bool readyToDelete = await ServeGeneratedReportStatically(reportPath, reportStaticPath);
+            workingDir.Delete(readyToDelete);
         }
 
         private async Task GenerateReportSansVisuals(Patient patient, string templatePath, string reportPath)
         {
-            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath);
+            Dictionary<string, string> templateReplacements = new Dictionary<string, string> 
+            {
+                { "NAME", patient.Name },
+                { "PREFERRED_NAME", patient.PreferredName },
+                { "MEDICATIONS", patient.Medications },
+                { "ADDRESS", patient.Address },
+                { "MEDICAL RECORD NUMBER", patient.MedicalRecordNumber.ToString() },
+                { "AGE_AT_TESTING", "19" }, // Hardcoded as calculation method does not yet exist
+                { "TEST_DATE", patient.DateOfTesting.ToString() }
+            };
+
+            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements);
         }
 
         private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir)
@@ -61,13 +80,18 @@ namespace DrDocx_Core.Controllers
             }
             var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict);
             System.IO.File.WriteAllText(tmpDir + "/test-result-data.json", output);
-            tmpDir.CreateSubdirectory("visualizations");
         }
 
         private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationsDirectoryPath)
         {
             var imagesInVisualizationDir = Directory.GetFiles(visualizationsDirectoryPath, "*.png");
 
+        }
+
+        private async Task<bool> ServeGeneratedReportStatically(string reportGenPath, string reportStaticPath)
+        {
+            System.IO.File.Copy(reportGenPath, reportStaticPath);
+            return true;
         }
     }
 }
