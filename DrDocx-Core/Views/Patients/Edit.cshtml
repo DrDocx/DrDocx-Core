@@ -141,7 +141,7 @@
                 <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
                     <h4 class="mdl-cell mdl-cell--12-col">Add Test Result Group</h4>
                     <form class="mdl-grid mdl-cell mdl-cell--12-col" asp-controller="Patients" asp-action="AddTestGroup" asp-route-patientId="@patient.Id">
-                        <input type="hidden" asp-route-patientId="@patient.Id"/>
+                        <input type="hidden" name="patientId" value="@patient.Id" />
                         <div class="mdl-layout-spacer"></div>
                         <select name="testGroupId" class="mdl-cell mdl-cell--5-col mdl-button mdl-button--raised " id="new-test-group">
                             @foreach (var newTestGroup in possibleNewTestGroups)
@@ -186,73 +186,79 @@
                                     {
                                         <tr>
                                             <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testResult.RelatedTest.Name)</td>
-                                            <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testResult.RawScore)</td>
-                                            <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testResult.ScaledScore)</td>
-                                            <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testResult.ZScore)</td>
-                                            <td class="mdl-data-table__cell--non-numeric">@Html.DisplayFor(model => testResult.Percentile)</td>
+                                            <td>@Html.DisplayFor(model => testResult.RawScore)</td>
+                                            <td>@Html.DisplayFor(model => testResult.ScaledScore)</td>
+                                            <td>@Html.DisplayFor(model => testResult.ZScore)</td>
+                                            <td>@Html.DisplayFor(model => testResult.Percentile)</td>
                                             <td>
                                                 <form asp-controller="Patients" asp-action="RemoveTest" asp-route-testResultGroupId="@testResultGroup.Id" asp-route-testResultId="@testResult.ID" method="POST">
-                                                    <input type="hidden" asp-route-patientId="@patient.Id" />
+                                                    <input type="hidden" name="patientId" value="@patient.Id" />
                                                     <input type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect" value="Remove" />
                                                 </form>
                                             </td>
                                         </tr>
                                     }
-                            </tbody>
-                        </table>
 
-                        @{
-                            var possibleNewTests = new List<Test>();
-                            if(testResultGroup.TestGroupInfo != null && testResultGroup.TestGroupInfo.TestGroupTests != null) foreach (var testGroupTest in testResultGroup.TestGroupInfo.TestGroupTests)
-                            {
-                                if (testResultGroup.Tests == null || !testResultGroup.Tests.Any(testResult => testResult.RelatedTest == testGroupTest.Test))
-                                {
-                                    possibleNewTests.Add(testGroupTest.Test);
+                                @{
+                                    var possibleNewTests = new List<Test>();
+                                    if (testResultGroup.TestGroupInfo != null && testResultGroup.TestGroupInfo.TestGroupTests != null) foreach (var testGroupTest in testResultGroup.TestGroupInfo.TestGroupTests)
+                                        {
+                                            if (testResultGroup.Tests == null || !testResultGroup.Tests.Any(testResult => testResult.RelatedTest == testGroupTest.Test))
+                                            {
+                                                possibleNewTests.Add(testGroupTest.Test);
+                                            }
+                                        }
                                 }
-                            }
-                        }
-                        @if (possibleNewTests.Count > 0)
-                        {
-                    <form class="mdl-grid mdl-cell mdl-cell--12-col" asp-controller="Patients" asp-action="AddTest" asp-route-testResultGroupId="@testResultGroup.Id">
-                        <input type="hidden" name="patientId" value="@patient.Id" />
-                        <div class="mdl-layout-spacer"></div>
-                        <select name="testId" class="mdl-cell mdl-cell--2-col mdl-button mdl-button--raised " id="new-test-group">
-                            @foreach (var newTest in possibleNewTests)
-                            {
-                                <option value="@newTest.Id">@Html.DisplayFor(modelItem => newTest.Name)</option>
+                                @if (possibleNewTests.Count > 0)
+                                {
+                                    <tr>
+                                        <form asp-controller="Patients" asp-action="AddTest" asp-route-testResultGroupId="@testResultGroup.Id">
+                                        <input type="hidden" name="patientId" value="@patient.Id" />
+                                        <td>
+                                        <select name="testId" class="mdl-button mdl-button--raised " id="new-test-group">
+                                            @foreach (var newTest in possibleNewTests)
+                                            {
+                                                <option value="@newTest.Id">@Html.DisplayFor(modelItem => newTest.Name)</option>
 
-                            }
-                        </select>
-                        <div class="mdl-layout-spacer"></div>
-                        <div class="mdl-cell mdl-cell--1-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input required name="RawScore" class="mdl-textfield__input" type="text" id="raw" value="">
-                            <label class="mdl-textfield__label" for="raw">Raw</label>
-                        </div>
-                        <div class="mdl-layout-spacer"></div>
-                        <div class="mdl-cell mdl-cell--1-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input required name="ScaledScore" class="mdl-textfield__input" type="text" id="scl" value="">
-                            <label class="mdl-textfield__label" for="scl">Scaled</label>
-                        </div>
-                        <div class="mdl-layout-spacer"></div>
-                        <div class="mdl-cell mdl-cell--1-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input required name="ZScore" class="mdl-textfield__input" type="text" id="z" value="">
-                            <label class="mdl-textfield__label" for="z">Z-Score</label>
-                        </div>
-                        <div class="mdl-layout-spacer"></div>
-                        <div class="mdl-cell mdl-cell--1-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input required name="Percentile" class="mdl-textfield__input" type="text" id="p" value="">
-                            <label class="mdl-textfield__label" for="p">Percentile</label>
-                        </div>
-                        <div class="mdl-layout-spacer"></div>
-                        <input type="submit" class="mdl-cell mdl-cell--2-col mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="Add Test Result" />
-
-                        <div class="mdl-layout-spacer"></div>
-                    </form>
-                        }
+                                            }
+                                        </select>
+                                            </td>
+                                        <td>
+                                        <div style="width: 50px" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                            <input required name="RawScore" class="mdl-textfield__input" type="text" id="raw" value="">
+                                            <label class="mdl-textfield__label" for="raw">Raw</label>
+                                        </div>
+                                            </td>
+                                            <td>
+                                        <div style="width: 50px" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                            <input required name="ScaledScore" class="mdl-textfield__input" type="text" id="scl" value="">
+                                            <label class="mdl-textfield__label" for="scl">Scaled</label>
+                                        </div>
+                                                </td>
+                                            <td>
+                                        <div style="width: 50px" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                            <input required name="ZScore" class="mdl-textfield__input" type="text" id="z" value="">
+                                            <label class="mdl-textfield__label" for="z">Z-Score</label>
+                                        </div>
+                                                </td>
+                                            <td>
+                                        <div style="width: 50px" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                            <input required name="Percentile" class="mdl-textfield__input" type="text" id="p" value="">
+                                            <label class="mdl-textfield__label" for="p">Percentile</label>
+                                        </div>
+                                                </td>
+                                        <td>
+                                        <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="Add Test Result" />
+                                            </td>
+                                    </form>
+                                        </tr>
+                                }
+                                </tbody>
+                        </table>
                     </div>
                     <div class="mdl-card__actions">
                         <form method="post" asp-action="RemoveTestGroup" asp-controller="Patients" asp-route-patientId="@patient.Id" asp-route-testResultGroupId="@testResultGroup.Id">
-                            <input type="hidden" asp-route-patientId="@patient.Id" />
+                            <input type="hidden" name="patientId" value="@patient.Id" />
                             <input type="submit" class="mdl-button" value="Remove Test Results Group" />
                         </form>
                     </div>

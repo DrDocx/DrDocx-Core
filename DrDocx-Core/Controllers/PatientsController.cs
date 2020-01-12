@@ -99,9 +99,22 @@ namespace DrDocx_Core.Controllers
         {
             var patient = await _context.Patients.FindAsync(patientId);
             var testResultGroup = await _context.TestResultGroups.FindAsync(testResultGroupId);
-
-            patient.ResultGroups.Remove(testResultGroup);
-
+            var v = new PatientViewModel
+            {
+                Patient = patient,
+                Tests = await _context.Tests.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
+                TestResults = await _context.TestResults.ToListAsync(),
+            };
+            if (testResultGroup.Tests != null)
+            {
+                foreach(var testResult in testResultGroup.Tests)
+                {
+                    _context.Remove(testResult);
+                }
+            }
             _context.Remove(testResultGroup);
             await _context.SaveChangesAsync();
 
