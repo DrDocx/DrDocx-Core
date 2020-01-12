@@ -10,6 +10,13 @@ using DrDocx_Core.Models;
 
 namespace DrDocx_Core.Controllers
 {
+    public class HomeViewModel
+    {
+        public IEnumerable<DrDocx_Core.Models.Patient> Patients;
+        public IEnumerable<DrDocx_Core.Models.TestGroup> TestGroups;
+        public IEnumerable<DrDocx_Core.Models.Test> Tests;
+    }
+
     public class HomeController : Controller
     {
         private readonly DatabaseContext _context;
@@ -21,7 +28,11 @@ namespace DrDocx_Core.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Patients.ToListAsync());
+            return View(new HomeViewModel {
+                Patients = await _context.Patients.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                Tests = await _context.Tests.ToListAsync()
+            } );
         }
 
         public IActionResult Privacy()
