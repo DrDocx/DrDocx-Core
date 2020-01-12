@@ -48,7 +48,7 @@ namespace DrDocx_Core.Controllers
 
         private async Task<WordprocessingDocument> GenerateReportSansVisuals(Patient patient)
         {
-
+            //TODO
         }
 
         private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir)
