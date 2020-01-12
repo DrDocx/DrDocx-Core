@@ -194,7 +194,7 @@ namespace ReportGen
             double sdtRatio = sdtWidth / sdtHeight;
 
             int finalWidth = (int)(sdtWidth * 7);
-            int finalHeight = (int)(finalWidth * 1.25);
+            int finalHeight = (int)(finalWidth * 1.2);
 
             //Resize picture placeholder
             element.Inline.Extent.Cx = finalWidth;

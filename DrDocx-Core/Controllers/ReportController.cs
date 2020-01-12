@@ -49,7 +49,7 @@ namespace DrDocx_Core.Controllers
             var reportStaticPath = projectDirectory + "/wwwroot/reports" + reportFileName;
             var visualizationsDirectory = workingDir.CreateSubdirectory("visualizations");
 
-            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir));
+            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir, reportGenDirectory, visualizationsDirectory));
             await CombineReportAndVisualizations(reportPath, visualizationsDirectory.Name);
             bool readyToDelete = await ServeGeneratedReportStatically(reportPath, reportStaticPath);
             workingDir.Delete(readyToDelete);
@@ -71,7 +71,7 @@ namespace DrDocx_Core.Controllers
             await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements);
         }
 
-        private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir)
+        private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, DirectoryInfo visualizationsDir)
         {
             var trgDict = new Dictionary<string, List<TestResult>>();
             foreach (var trGroup in patient.ResultGroups)
@@ -79,7 +79,17 @@ namespace DrDocx_Core.Controllers
                 trgDict.Add(trGroup.TestGroupInfo.Name, trGroup.Tests);
             }
             var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict);
-            System.IO.File.WriteAllText(tmpDir + "/test-result-data.json", output);
+            var resultJsonPath = tmpDir + "/test-result-data.json";
+            System.IO.File.WriteAllText(resultJsonPath, output);
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = $"python chartGen.py {resultJsonPath} {visualizationsDir.FullName}";
+            startInfo.WorkingDirectory = reportGenDirectory;
+            process.StartInfo = startInfo;
+            process.Start();
         }
 
         private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationsDirectoryPath)
