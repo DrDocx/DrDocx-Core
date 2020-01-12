@@ -15,7 +15,7 @@ namespace ReportGen
 {
     static class ReportGen
     {
-        public static async Task GenerateReport(Patient patient, string templatePath, string newFilePath, Dictionary<string, string> templateReplacements)
+        public static async Task GenerateReport(Patient patient, string templatePath, string newFilePath, Dictionary<string, string> templateReplacements, List<TestResultGroup> testGroups)
         {
 
             if (File.Exists(newFilePath))
@@ -27,9 +27,6 @@ namespace ReportGen
 
             InsertPatientData(templateReplacements, templatePath, newFilePath);
 
-            List<TestResult> results = new List<TestResult>();
-            List<TestResultGroup> testGroups = new List<TestResultGroup>();
-
             Paragraph p = new Paragraph(new Run(new Text("\n")));
             foreach (var testResultGroup in testGroups)
             {
@@ -38,10 +35,13 @@ namespace ReportGen
                 using (WordprocessingDocument doc = WordprocessingDocument.Open(newFilePath, true))
                 {
                     doc.MainDocumentPart.Document.Body.AppendChild(p);
+                    CreateSubTable(newFilePath, testResultGroup.Tests);
+                    Paragraph lineBreak = new Paragraph(new Run(new Text("\n")));
+                    doc.MainDocumentPart.Document.Body.AppendChild(lineBreak);
                 }
+                
+                
             }
-
-            CreateSubTable(newFilePath, results);
         }
 
         public static async Task CombineReportAndVisualizations(string reportPath, string[] visualizationImagePaths)

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DrDocx_Core.Models
 {
@@ -9,6 +11,7 @@ namespace DrDocx_Core.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        [JsonIgnore]
         public List<TestGroupTest> TestGroupTests { get; set; }
         public int Id { get; set; }
 
@@ -23,6 +26,7 @@ namespace DrDocx_Core.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        [JsonIgnore]
         public List<TestGroupTest> TestGroupTests { get; set; }
 
         public int Id { get; set; }
@@ -48,6 +52,7 @@ namespace DrDocx_Core.Models
     public class TestGroupTest
     {
         public int Id { get; set; }
+        [JsonIgnore]
         public Test Test { get; set; }
         public int TestId { get; set; }
         public TestGroup TestGroup { get; set; }

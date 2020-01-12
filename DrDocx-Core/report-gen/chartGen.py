@@ -199,7 +199,7 @@ def concatImages():
 
 	for _page in range(1, int(PAGECOUNT + 1)):
 		print(Fore.CYAN + "Generating Visualization Page " + str(_page))
-		_curve = Image.open(_writePath + "\\NormalCurveResized.png")
+		_curve = Image.open(_localDir + "\\NormalCurveResized.png")
 		_table = Image.open(_writePath + "\\graph" + str(_page) + ".png")
 
 		_dest = Image.new('RGB', (_table.width, _table.height + _curve.height), (255, 255, 255))
