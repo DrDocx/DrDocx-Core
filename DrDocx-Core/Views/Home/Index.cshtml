@@ -40,7 +40,7 @@
                         <h3>Existing Patients</h3>
                         @foreach (var item in Model)
                         {
-                            <a class="mdl-list__item mdl-button mdl-js-button setting-li" asp-controller="Patients" asp-action="Details" asp-route-id="@item.Id">
+                            <a class="mdl-list__item mdl-button mdl-js-button setting-li" asp-controller="Patients" asp-action="Edit" asp-route-id="@item.Id">
                                 <span class="mdl-list__item-primary-content">
                                     @Html.DisplayFor(modelItem => item.Name) (@Html.DisplayFor(modelItem => item.PreferredName))
                                 </span>
