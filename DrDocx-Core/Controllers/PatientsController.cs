@@ -228,7 +228,7 @@ namespace DrDocx_Core.Controllers
             var data = net.DownloadData(link);
             var content = new System.IO.MemoryStream(data);
             var contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-            var fileName = $"Patient-{patient.Name}-{patient.DateOfTesting}";
+            var fileName = $"Patient-{patient.Name}-Report.docx";
             return File(content, contentType, fileName);
         }
 
@@ -236,7 +236,7 @@ namespace DrDocx_Core.Controllers
         {
             // Create local report directory
             var strippedPatientName = patient.Name.Replace(" ", "-");
-            var workingDir = Directory.CreateDirectory(@"tmp/reports/patient-" + strippedPatientName);
+            var workingDir = Directory.CreateDirectory(@"./tmp/reports/patient-" + strippedPatientName);
             string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "/DrDocx-Core/DrDocx-Core";
             var reportGenDirectory = projectDirectory + "/report-gen";
             var reportTemplatePath = reportGenDirectory + "/Report_Template.dotx";
@@ -246,14 +246,24 @@ namespace DrDocx_Core.Controllers
             var visualizationsDirectory = workingDir.CreateSubdirectory("visualizations");
 
             await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir, reportGenDirectory, visualizationsDirectory));
-            await CombineReportAndVisualizations(reportPath, visualizationsDirectory.Name);
+            await CombineReportAndVisualizations(reportPath, visualizationsDirectory);
             bool readyToDelete = await ServeGeneratedReportStatically(reportPath, reportStaticPath);
-            workingDir.Delete(readyToDelete);
+            //workingDir.Delete(readyToDelete);
             return reportStaticPath;
         }
 
         private async Task GenerateReportSansVisuals(Patient patient, string templatePath, string reportPath)
         {
+            var v = new PatientViewModel
+            {
+                Patient = patient,
+                Tests = await _context.Tests.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
+                TestResults = await _context.TestResults.ToListAsync(),
+            };
+            var testGroups = patient.ResultGroups;
             Dictionary<string, string> templateReplacements = new Dictionary<string, string>
             {
                 { "NAME", patient.Name },
@@ -265,42 +275,56 @@ namespace DrDocx_Core.Controllers
                 { "TEST_DATE", patient.DateOfTesting.ToString() }
             };
 
-            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements);
+            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements, testGroups);
         }
 
         private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, DirectoryInfo visualizationsDir)
         {
+            var v = new PatientViewModel
+            {
+                Patient = patient,
+                Tests = await _context.Tests.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
+                TestResults = await _context.TestResults.ToListAsync(),
+            };
             var resultGroups = patient.ResultGroups;
-            if (resultGroups.Count == 0)
-                return;
+
             var trgDict = new Dictionary<string, List<TestResult>>();
             foreach (var trGroup in resultGroups)
             {
                 trgDict.Add(trGroup.TestGroupInfo.Name, trGroup.Tests);
             }
-            var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict);
-            var resultJsonPath = tmpDir + "/test-result-data.json";
+            var serializeOptions = new JsonSerializerOptions { MaxDepth = 10 };
+            var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict, serializeOptions);
+            var resultJsonPath = tmpDir.FullName + "/test-result-data.json";
             System.IO.File.WriteAllText(resultJsonPath, output);
 
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = $"python chartGen.py {resultJsonPath} {visualizationsDir.FullName}";
+            startInfo.FileName = "python.exe";
             startInfo.WorkingDirectory = reportGenDirectory;
+            startInfo.Arguments = $"chartGen.py {resultJsonPath} {visualizationsDir.FullName}";
             process.StartInfo = startInfo;
             process.Start();
         }
 
-        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationsDirectoryPath)
+        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, DirectoryInfo visualizationDir)
         {
-            var imagesInVisualizationDir = Directory.GetFiles(visualizationsDirectoryPath, "*.png");
-
+            var imagesInVisualizationDir = Directory.GetFiles(visualizationDir.FullName, "*.png");
+            await ReportGen.ReportGen.CombineReportAndVisualizations(reportSansVisualsPath, imagesInVisualizationDir);
         }
 
         private async Task<bool> ServeGeneratedReportStatically(string reportGenPath, string reportStaticPath)
         {
+            if (System.IO.File.Exists(reportStaticPath))
+            {
+                System.IO.File.Delete(reportStaticPath);
+            }
             System.IO.File.Copy(reportGenPath, reportStaticPath);
+            
             return true;
         }
     }
