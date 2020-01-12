@@ -28,8 +28,6 @@
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
             <div class="mdl-layout__header-row">
-            </div>
-            <div class="mdl-layout__header-row">
                 @{
                     if (ViewData["ReturnController"] != null && @ViewData["ReturnAction"] != null)
                     {
@@ -40,8 +38,7 @@
                 }
                 <h3 style="margin-left: 10px; font-size: 34px; line-height: 40px;">@ViewData["Title"]</h3>
                 <div class="mdl-layout-spacer"></div>
-            </div>
-            <div class="mdl-layout__header-row">
+                <div style="height: 80px; width: 160px; background-position: center; background-size:cover; background-image: url('/logo.png')"></div>
             </div>
             <div id="tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
                 @RenderSection("Tabs", required: false)
