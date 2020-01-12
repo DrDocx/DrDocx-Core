@@ -69,6 +69,29 @@ namespace DrDocx_Core.Controllers
             return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
         }
 
+        // POST: TestResultGroups/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTestResultGroup(int testGroupId, int patientId)
+        {
+            var patient = await _context.Patients
+                .FirstOrDefaultAsync(m => m.Id == patientId);
+            TestResultGroup trg = new TestResultGroup();
+            trg.Tests = new List<TestResult>();
+            trg.TestGroupInfo = await _context.TestGroups
+                .FirstOrDefaultAsync(m => m.Id == testGroupId);
+            Console.WriteLine("patientId: " + patientId + ", patient: " + patient.Name + ", testGroupId: " + testGroupId);
+            if (ModelState.IsValid)
+            {
+                _context.Add(trg);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(new PatientViewModel { Patient = patient, TestGroups = await _context.TestGroups.ToListAsync() });
+        }
+
         // GET: Patients/Create
         public IActionResult Create()
         {

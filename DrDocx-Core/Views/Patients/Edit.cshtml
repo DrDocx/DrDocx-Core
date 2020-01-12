@@ -127,15 +127,15 @@
                 <h4 class="mdl-cell mdl-cell--12-col">Add Test Result Group</h4>
                 <div class="mdl-grid mdl-cell mdl-cell--12-col">
                     <div class="mdl-layout-spacer"></div>
-                    <form asp-controller="TestResultGroups" asp-action="Create" id="form2">
-                        <select class="mdl-cell mdl-cell--5-col mdl-button mdl-button--raised " id="new-test-group">
+                    <form asp-action="CreateTestResultGroup" id="form2" asp-route-patientId="@patient.Id">
+                        <select name="testGroupId" class="mdl-cell mdl-cell--5-col mdl-button mdl-button--raised " id="new-test-group">
                             @if (testGroups.Count > 0) foreach (var item in testGroups)
                                 {
                                     <option value="@item.Id">@Html.DisplayFor(modelItem => item.Name)</option>
                                 }
                         </select>
                         <div class="mdl-layout-spacer"></div>
-                        <button class="mdl-cell mdl-cell--5-col mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Add Test</button>
+                        <button type="submit" class="mdl-cell mdl-cell--5-col mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Add Test</button>
                     </form>
                     <div class="mdl-layout-spacer"></div>
                 </div>
@@ -183,6 +183,16 @@
                     </table>
                 </div>
                 <div class="mdl-card__actions">
+                    @foreach (var sub in item.Tests)
+                    {
+                        if (!item.TestGroupInfo.TestGroupTests.Any(testGroupTest => testGroupTest.Test==sub.RelatedTest)){
+                        <tr>
+                            <td class="mdl-data-table__cell--non-numeric">Sub test 1</td>
+                            <td>@Html.DisplayFor(modelSub => sub.RawScore)</td>
+                            <td>@Html.DisplayFor(modelSub => sub.ScaledScore)</td>
+                        </tr>
+                        }
+                    }
                     <a href="#" class="mdl-button">Edit Test Results</a>
                 </div>
             </div>
