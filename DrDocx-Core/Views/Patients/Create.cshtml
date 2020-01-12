@@ -52,9 +52,9 @@
             <div class="mdl-card mdl-cell mdl-cell--12-col">
                 <div class="mdl-card__supporting-text">
                     <h4 class="mdl-cell mdl-cell--12-col">Notes</h4>
-                    <div class="section__text mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col mdl-textfield mdl-js-textfield">
-                            <textarea disabled class="mdl-textfield__input" form="form" type="text" rows="5" id="notes" asp-for="Patient.Notes">@Html.DisplayFor(model => model.Patient.Notes)</textarea>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <textarea class="mdl-textfield__input" form="form" type="text" rows="3" id="notes" asp-for="Notes"></textarea>
                         </div>
                     </div>
                 </div>
@@ -64,10 +64,8 @@
             <div class="mdl-card mdl-cell mdl-cell--12-col">
                 <div class="mdl-card__supporting-text">
                     <h4 class="mdl-cell mdl-cell--12-col">Medications</h4>
-                    <div class="section__text mdl-grid">
-                        <div class="mdl-cell mdl-cell--12-col  mdl-textfield mdl-js-textfield">
-                            <textarea disabled class="mdl-textfield__input" form="form" type="text" rows="3" id="meds" asp-for="Patient.Medications">@Html.DisplayFor(model => model.Patient.Medications)</textarea>
-                        </div>
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <textarea class="mdl-textfield__input" form="form" type="text" rows="3" id="meds" asp-for="Medications"></textarea>
                     </div>
                 </div>
             </div>
