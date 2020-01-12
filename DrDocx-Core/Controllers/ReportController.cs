@@ -9,6 +9,7 @@ using DrDocx_Core.Models;
 using DocumentFormat.OpenXml.Packaging;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ReportGen;
 
 namespace DrDocx_Core.Controllers
 {
@@ -38,17 +39,17 @@ namespace DrDocx_Core.Controllers
             var strippedPatientName = patient.Name.Replace(" ", "-");
             var workingDir = Directory.CreateDirectory(@"reports/patient-" + strippedPatientName);
             var tmpDir = workingDir.CreateSubdirectory("tmp");
-
-            var reportSansVisualsTask = GenerateReportSansVisuals(patient);
-            var testResultVisualizationsTask = GenerateTestVisualizations(patient, tmpDir);
-            await Task.WhenAll(reportSansVisualsTask, testResultVisualizationsTask);
-            var reportSansVisuals = await reportSansVisualsTask;
+            string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+            var reportGenDirectory = projectDirectory + "/report-gen";
+            var reportTemplatePath = reportGenDirectory + "/Report_Template.dotx";
+            var reportPath = tmpDir.Name + "Patient-" + strippedPatientName + patient.DateOfTesting;
+            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, tmpDir));
 
         }
 
-        private async Task<WordprocessingDocument> GenerateReportSansVisuals(Patient patient)
+        private async Task GenerateReportSansVisuals(Patient patient, string templatePath, string reportPath)
         {
-            //TODO
+            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath);
         }
 
         private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir)
@@ -60,11 +61,13 @@ namespace DrDocx_Core.Controllers
             }
             var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict);
             System.IO.File.WriteAllText(tmpDir + "/test-result-data.json", output);
+            tmpDir.CreateSubdirectory("visualizations");
         }
 
-        private async Task<WordprocessingDocument> CombineReportAndVisualizations(WordprocessingDocument reportSansVisuals, string filePath)
+        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationsDirectoryPath)
         {
-            //TODO
+            var imagesInVisualizationDir = Directory.GetFiles(visualizationsDirectoryPath, "*.png");
+
         }
     }
 }
