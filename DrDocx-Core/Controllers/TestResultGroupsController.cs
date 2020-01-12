@@ -54,7 +54,7 @@ namespace DrDocx_Core.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id")] TestResultGroup testResultGroup)
+        public async Task<IActionResult> Create([Bind("Id")] TestResultGroup testResultGroup, int testGroupId, int patientId)
         {
             if (ModelState.IsValid)
             {
