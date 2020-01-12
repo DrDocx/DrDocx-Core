@@ -22,6 +22,8 @@ _TestGroups = []
 _decodedJson = dict()
 _localDir = ""
 
+_jsonPath = ""
+
 _count = 0.0
 _totalDotsH = 0.0
 
@@ -30,10 +32,14 @@ SHOWCHART = False
 BOGUSVALS = True
 FIRSTPAGE = True
 DONE = False
+AUTOPATH = False
 PAGECOUNT = 1
 
 def main():
 	global DONE 
+	global _jsonPath
+
+	_jsonPath = sys.argv[1]
 
 	print(Fore.GREEN + "Generating Table")
 	ingestDataFile()
@@ -49,12 +55,16 @@ def ingestDataFile():
 	global DEBUG
 	global _decodedJson
 	global _localDir
+	global AUTOPATH
 
 	_localDir = os.getcwd()
 	if DEBUG:
 		print("Local Directory is: " + _localDir)
 
-	_dataFilePath = _localDir + "\dataFile.json"
+	if AUTOPATH: 
+		_dataFilePath = _localDir + "\dataFile.json"
+	else: 
+		_dataFilePath = _jsonPath
 	_dataFile = open(_dataFilePath, "r") #read only access of the data file
 
 	_rawDataJson = _dataFile.read()
@@ -98,7 +108,7 @@ def generateChart():
 			_testName = _testList[index]
 			_testVal = _decodedJson[_cat][_testList[index]]
 			if BOGUSVALS:
-				_testVal = random.randint(-4, 4)
+				_testVal = random.uniform(-5,5)
 			_xList.append(_testName)
 			_yList.append(_testVal)
 			_colors.append(getColor(_testVal))
@@ -184,7 +194,7 @@ def concatImages():
 		_table = Image.open(_localDir + "\\graph" + str(_page) + ".png")
 
 		_dest = Image.new('RGB', (_table.width, _table.height + _curve.height), (255, 255, 255))
-		_dest.paste(_table, (0, _curve.height - 500))
+		_dest.paste(_table, (0, _curve.height - 470))
 		_dest.paste(_curve, (186, 0))
 
 		_dest = _dest.crop((0, 0, _dest.width, 300 * 10))
