@@ -101,9 +101,22 @@ namespace DrDocx_Core.Controllers
         {
             var patient = await _context.Patients.FindAsync(patientId);
             var testResultGroup = await _context.TestResultGroups.FindAsync(testResultGroupId);
-
-            patient.ResultGroups.Remove(testResultGroup);
-
+            var v = new PatientViewModel
+            {
+                Patient = patient,
+                Tests = await _context.Tests.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
+                TestResults = await _context.TestResults.ToListAsync(),
+            };
+            if (testResultGroup.Tests != null)
+            {
+                foreach(var testResult in testResultGroup.Tests)
+                {
+                    _context.Remove(testResult);
+                }
+            }
             _context.Remove(testResultGroup);
             await _context.SaveChangesAsync();
 
@@ -199,15 +212,14 @@ namespace DrDocx_Core.Controllers
             });
         }
 
-        // POST: Patients/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpGet]
+        // GET: Patients/Delete/5
+        public async Task<IActionResult> Delete(int patientId)
         {
-            var patient = await _context.Patients.FindAsync(id);
+            var patient = await _context.Patients.FindAsync(patientId);
             _context.Patients.Remove(patient);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool PatientExists(int id)
