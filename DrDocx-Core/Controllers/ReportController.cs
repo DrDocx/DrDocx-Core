@@ -53,8 +53,13 @@ namespace DrDocx_Core.Controllers
 
         private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir)
         {
-            var testResultGroupsJson = JsonSerializer.Serialize<List<TestResultGroup>>(patient.ResultGroups);
-             System.IO.File.WriteAllText(tmpDir + "/test-data.json", testResultGroupsJson);
+            var trgDict = new Dictionary<string, List<TestResult>>();
+            foreach (var trGroup in patient.ResultGroups)
+            {
+                trgDict.Add(trGroup.TestGroupInfo.Name, trGroup.Tests);
+            }
+            var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict);
+            System.IO.File.WriteAllText(tmpDir + "/test-result-data.json", output);
         }
 
         private async Task<WordprocessingDocument> CombineReportAndVisualizations(WordprocessingDocument reportSansVisuals, string filePath)
