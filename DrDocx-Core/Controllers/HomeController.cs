@@ -1,37 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using DrDocx_Core;
 using DrDocx_Core.Models;
 
 namespace DrDocx_Core.Controllers
 {
+    public class HomeViewModel
+    {
+        public IEnumerable<DrDocx_Core.Models.Patient> Patients;
+        public IEnumerable<DrDocx_Core.Models.TestGroup> TestGroups;
+        public IEnumerable<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
+        public IEnumerable<DrDocx_Core.Models.Test> Tests;
+    }
+
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly DatabaseContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(DatabaseContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            return View(new HomeViewModel {
+                Patients = await _context.Patients.ToListAsync(),
+                TestGroups = await _context.TestGroups.ToListAsync(),
+                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
+                Tests = await _context.Tests.ToListAsync()
+            } );
         }
 
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

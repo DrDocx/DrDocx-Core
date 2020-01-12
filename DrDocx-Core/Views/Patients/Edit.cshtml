@@ -1,80 +1,201 @@
-﻿@model DrDocx_Core.Models.Patient
+﻿@model DrDocx_Core.Controllers.PatientViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    var patient = Model.Patient;
+    var testGroups = Model.TestGroups;
+
+    if (patient.Name == null || patient.Name.Length == 0)
+    {
+        ViewData["Title"] = "Unnamed Patient";
+    }
+    else
+    {
+        ViewData["Title"] = patient.Name + "(" + patient.PreferredName + ")";
+    }
+    ViewData["ReturnController"] = "Home";
+    ViewData["ReturnAction"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>Patient</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Diagnosis" class="control-label"></label>
-                <input asp-for="Diagnosis" class="form-control" />
-                <span asp-validation-for="Diagnosis" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PreferredName" class="control-label"></label>
-                <input asp-for="PreferredName" class="form-control" />
-                <span asp-validation-for="PreferredName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medications" class="control-label"></label>
-                <input asp-for="Medications" class="form-control" />
-                <span asp-validation-for="Medications" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateOfBirth" class="control-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" />
-                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateOfTesting" class="control-label"></label>
-                <input asp-for="DateOfTesting" class="form-control" />
-                <span asp-validation-for="DateOfTesting" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MedicalRecordNumber" class="control-label"></label>
-                <input asp-for="MedicalRecordNumber" class="form-control" />
-                <span asp-validation-for="MedicalRecordNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AgeAtTesting" class="control-label"></label>
-                <input asp-for="AgeAtTesting" class="form-control" />
-                <span asp-validation-for="AgeAtTesting" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@section Tabs {
+    <a href="#overview" class="mdl-layout__tab is-active">Overview</a>
+    <a href="#testresults" class="mdl-layout__tab">Test Results</a>
 }
+
+<form asp-action="Edit" id="form">
+    <input type="hidden" asp-for="Patient.Id" />
+    <input style="display: none" type="submit" id="form-submit" />
+    <div class="mdl-layout__tab-panel is-active" id="overview">
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Details</h4>
+                    @Html.ValidationSummary()
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="Patient.Name" disabled class="mdl-textfield__input" type="text" id="fname" value="@patient.Name">
+                            <label class="mdl-textfield__label" for="fname">Full Name</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="Patient.PreferredName" disabled class="mdl-textfield__input" type="text" id="pname" value="@patient.PreferredName">
+                            <label class="mdl-textfield__label" for="pname">Prefered Name</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="Patient.DateOfBirth" disabled class="mdl-textfield__input" type="text" id="dob" value="@patient.DateOfBirth.Year-@patient.DateOfBirth.Month-@patient.DateOfBirth.Day" pattern="\d{1,4}\-\d{1,2}-\d{1,2}">
+                            <label class="mdl-textfield__label" for="dob">Date of Birth (YYYY-MM-DD)</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="Patient.DateOfTesting" disabled class="mdl-textfield__input" type="text" id="dot" value="@patient.DateOfTesting.Year-@patient.DateOfTesting.Month-@patient.DateOfTesting.Day" pattern="\d{1,4}\-\d{1,2}-\d{1,2}">
+                            <label class="mdl-textfield__label" for="dot">Date of Tests (YYYY-MM-DD)</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="Patient.AgeAtTesting" disabled class="mdl-textfield__input" type="text" id="age" value="@patient.AgeAtTesting">
+                            <label class="mdl-textfield__label" for="age">Age at Testing</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="Patient.MedicalRecordNumber" disabled class="mdl-textfield__input" type="text" id="mrn" value="@patient.MedicalRecordNumber">
+                            <label class="mdl-textfield__label" for="mrn">Medical Record Number</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="Patient.Address" disabled class="mdl-textfield__input" type="text" id="address" value="@patient.Address">
+                            <label class="mdl-textfield__label" for="address">Address</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mdl-card__actions">
+                    <a id="details-button" class="edit-button mdl-button" onclick="toggleEdit('details-button', ['fname', 'pname', 'dob', 'dot', 'mrn', 'address'])">Edit Patient Details</a>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text">
+                    <h4 class="mdl-cell mdl-cell--12-col">Notes</h4>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <textarea disabled class="mdl-textfield__input" form="form" type="text" rows="3" id="notes" asp-for="Patient.Notes">@Html.DisplayFor(model => model.Patient.Notes)</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="mdl-card__actions">
+                    <a id="notes-button" class="mdl-button" onclick="toggleEdit('notes-button', ['notes'])">Edit Patient Notes</a>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text">
+                    <h4 class="mdl-cell mdl-cell--12-col">Medications</h4>
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <textarea disabled class="mdl-textfield__input" form="form" type="text" rows="3" id="meds" asp-for="Patient.Medications">@Html.DisplayFor(model => model.Patient.Medications)</textarea>
+                    </div>
+                </div>
+                <div class="mdl-card__actions">
+                    <a id="meds-button" class="mdl-button" onclick="toggleEdit('meds-button', ['meds'])">Edit Patient Medications</a>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Analysis</h4>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="Patient.Diagnosis" disabled class="mdl-textfield__input" type="text" id="diag" value="@patient.Diagnosis">
+                            <label class="mdl-textfield__label" for="diag">Diagnosis</label>
+                        </div>
+                        <br>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            Download Report
+                        </button>
+                        <br>
+                    </div>
+                </div>
+                <div class="mdl-card__actions">
+                    <a id="anal-button" class="mdl-button" onclick="toggleEdit('anal-button', ['diag'])">Edit Diagnosis</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</form>
+
+
+<div class="mdl-layout__tab-panel" id="testresults">
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+        <div class="mdl-card mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                <h4 class="mdl-cell mdl-cell--12-col">Add Test Result Group</h4>
+                <div class="mdl-grid mdl-cell mdl-cell--12-col">
+                    <div class="mdl-layout-spacer"></div>
+                    <form asp-action="CreateTestResultGroup" id="form2" asp-route-patientId="@patient.Id">
+                        <select name="testGroupId" class="mdl-cell mdl-cell--5-col mdl-button mdl-button--raised " id="new-test-group">
+                            @if (testGroups.Count > 0) foreach (var item in testGroups)
+                                {
+                                    <option value="@item.Id">@Html.DisplayFor(modelItem => item.Name)</option>
+                                }
+                        </select>
+                        <div class="mdl-layout-spacer"></div>
+                        <button type="submit" class="mdl-cell mdl-cell--5-col mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Add Test</button>
+                    </form>
+                    <div class="mdl-layout-spacer"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+        @if (patient.ResultGroups != null) {
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Contents</h4>
+                    <ul class="mdl-cell mdl-cell--12-col toc">
+                        @foreach (var item in patient.ResultGroups)
+                        {
+                        <a href="#">@Html.DisplayFor(modelItem => item.TestGroupInfo.Name)</a>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </section>
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+        @if(patient.ResultGroups!=null && patient.ResultGroups.Count>0) foreach (var item in patient.ResultGroups) {
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">@Html.DisplayFor(modelItem => item.TestGroupInfo.Name)</h4>
+                    <table class="mdl-cell mdl-cell--12-col mdl-data-table mdl-js-data-table">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric"><strong>Test Name</strong></th>
+                                <th>Raw</th>
+                                <th>Scaled</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sub in item.Tests)
+                            {
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">Sub test 1</td>
+                                    <td>@Html.DisplayFor(modelSub => sub.RawScore)</td>
+                                    <td>@Html.DisplayFor(modelSub => sub.ScaledScore)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mdl-card__actions">
+                    @foreach (var sub in item.Tests)
+                    {
+                        if (!item.TestGroupInfo.TestGroupTests.Any(testGroupTest => testGroupTest.Test==sub.RelatedTest)){
+                        <tr>
+                            <td class="mdl-data-table__cell--non-numeric">Sub test 1</td>
+                            <td>@Html.DisplayFor(modelSub => sub.RawScore)</td>
+                            <td>@Html.DisplayFor(modelSub => sub.ScaledScore)</td>
+                        </tr>
+                        }
+                    }
+                    <a href="#" class="mdl-button">Edit Test Results</a>
+                </div>
+            </div>
+        }
+    </section>
+</div>
