@@ -1,156 +1,98 @@
 ﻿@model DrDocx_Core.Models.Patient
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Patient";
+    ViewData["ReturnController"] = "Home";
+    ViewData["ReturnAction"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-    <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
-        <div class="mdl-layout__header-row">
-        </div>
-        <div class="mdl-grid mdl-layout__header-row">
-            <a class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored" asp-controller="Home" asp-action="Index">
-                <i class="material-icons">chevron_left</i>
-            </a>
 
-            <h3 style="margin-left: 10px; font-size: 34px; line-height: 40px;">
-                Add Patient
-            </h3>
-            <div class="mdl-layout-spacer"></div>
-        </div>
-        <div class="mdl-layout__header-row">
-        </div>
-        <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
-            <a href="#overview" class="mdl-layout__tab is-active">Overview</a>
-            <a href="#testresults" class="mdl-layout__tab">Test Results</a>
-        </div>
-    </header>
-    <main class="mdl-layout__content">
-        <form asp-action="Create" id="form">
-            <div class="mdl-layout__tab-panel is-active" id="overview">
-                <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-                    <div class="mdl-card mdl-cell mdl-cell--12-col">
-                        <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
-                            <h4 class="mdl-cell mdl-cell--12-col">Details</h4>
-                            <p>@Html.ValidationSummary()</p>
-                            <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input required asp-for="Name" class="mdl-textfield__input" type="text" id="fname">
-                                    <label class="mdl-textfield__label" for="fname">Full Name</label>
-                                </div>
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input asp-for="PreferredName" class="mdl-textfield__input" type="text" id="pname">
-                                    <label class="mdl-textfield__label" for="pname">Prefered Name</label>
-                                </div>
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input required asp-for="DateOfBirth" class="mdl-textfield__input" type="text" id="dob" pattern="\d{1,4}\-\d{1,2}-\d{1,2}">
-                                    <label class="mdl-textfield__label" for="dob">Date of Birth (YYYY-MM-DD)</label>
-                                </div>
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input required asp-for="DateOfTesting" class="mdl-textfield__input" type="text" id="dot" pattern="\d{1,4}\-\d{1,2}-\d{1,2}">
-                                    <label class="mdl-textfield__label" for="dot">Date of Tests (YYYY-MM-DD)</label>
-                                </div>
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input required asp-for="MedicalRecordNumber" class="mdl-textfield__input" type="text" id="mrn" value="1">
-                                    <label class="mdl-textfield__label" for="mrn">Medical Record Number</label>
-                                </div>
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input asp-for="Address" class="mdl-textfield__input" type="text" id="address">
-                                    <label class="mdl-textfield__label" for="address">Address</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-                    <div class="mdl-card mdl-cell mdl-cell--12-col">
-                        <div class="mdl-card__supporting-text">
-                            <h4 class="mdl-cell mdl-cell--12-col">Notes</h4>
-                            <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
-                                <div class="mdl-textfield mdl-js-textfield">
-                                    <textarea class="mdl-textfield__input" form="form" type="text" rows="3" id="notes" asp-for="Notes"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-                    <div class="mdl-card mdl-cell mdl-cell--12-col">
-                        <div class="mdl-card__supporting-text">
-                            <h4 class="mdl-cell mdl-cell--12-col">Medications</h4>
-                            <div class="mdl-textfield mdl-js-textfield">
-                                <textarea class="mdl-textfield__input" form="form" type="text" rows="3" id="meds" asp-for="Medications"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-                    <div class="mdl-card mdl-cell mdl-cell--12-col">
-                        <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
-                            <h4 class="mdl-cell mdl-cell--12-col">Analysis</h4>
-                            <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <input asp-for="Diagnosis" class="mdl-textfield__input" type="text" id="diag">
-                                    <label class="mdl-textfield__label" for="diag">Diagnosis</label>
-                                </div>
-                                <br>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-                    <div class="mdl-card mdl-cell mdl-cell--12-col">
-                        <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
-                            <h4 class="mdl-cell mdl-cell--12-col">Create</h4>
-                            <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
-                                <input class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type="submit" id="form-submit" value="Create Patient"/>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+@section Tabs {
+    <a href="#overview" class="mdl-layout__tab is-active">Overview</a>
+}
 
-            </div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <footer class="mdl-mega-footer">
-                <div class="mdl-mega-footer--middle-section">
-                    <div class="mdl-mega-footer--drop-down-section">
-                        <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
-                        <h1 class="mdl-mega-footer--heading">Features</h1>
-                        <ul class="mdl-mega-footer--link-list">
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Terms</a></li>
-                            <li><a href="#">Partners</a></li>
-                            <li><a href="#">Updates</a></li>
-                        </ul>
-                    </div>
-                    <div class="mdl-mega-footer--drop-down-section">
-                        <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
-                        <h1 class="mdl-mega-footer--heading">Details</h1>
-                        <ul class="mdl-mega-footer--link-list">
-                            <li><a href="#">Spec</a></li>
-                            <li><a href="#">Tools</a></li>
-                            <li><a href="#">Resources</a></li>
-                        </ul>
-                    </div>
-                    <div class="mdl-mega-footer--drop-down-section">
-                        <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
-                        <h1 class="mdl-mega-footer--heading">Technology</h1>
-                        <ul class="mdl-mega-footer--link-list">
-                            <li><a href="#">How it works</a></li>
-                            <li><a href="#">Patterns</a></li>
-                            <li><a href="#">Usage</a></li>
-                            <li><a href="#">Products</a></li>
-                            <li><a href="#">Contracts</a></li>
-                        </ul>
+<form asp-action="Create" id="form">
+    <div class="mdl-layout__tab-panel is-active" id="overview">
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Details</h4>
+                    @Html.ValidationSummary()
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="Name" class="mdl-textfield__input" type="text" id="fname">
+                            <label class="mdl-textfield__label" for="fname">Full Name</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="PreferredName" class="mdl-textfield__input" type="text" id="pname">
+                            <label class="mdl-textfield__label" for="pname">Prefered Name</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="DateOfBirth" class="mdl-textfield__input" type="text" id="dob" pattern="\d{1,4}\-\d{1,2}-\d{1,2}">
+                            <label class="mdl-textfield__label" for="dob">Date of Birth (YYYY-MM-DD)</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="DateOfTesting" class="mdl-textfield__input" type="text" id="dot" pattern="\d{1,4}\-\d{1,2}-\d{1,2}">
+                            <label class="mdl-textfield__label" for="dot">Date of Tests (YYYY-MM-DD)</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input required asp-for="MedicalRecordNumber" class="mdl-textfield__input" type="text" id="mrn" value="1">
+                            <label class="mdl-textfield__label" for="mrn">Medical Record Number</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="Address" class="mdl-textfield__input" type="text" id="address">
+                            <label class="mdl-textfield__label" for="address">Address</label>
+                        </div>
                     </div>
                 </div>
-            </footer>
-        </form>
-    </main>
-</div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text">
+                    <h4 class="mdl-cell mdl-cell--12-col">Notes</h4>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <textarea class="mdl-textfield__input" form="form" type="text" rows="3" id="notes" asp-for="Notes"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text">
+                    <h4 class="mdl-cell mdl-cell--12-col">Medications</h4>
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <textarea class="mdl-textfield__input" form="form" type="text" rows="3" id="meds" asp-for="Medications"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Analysis</h4>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input asp-for="Diagnosis" class="mdl-textfield__input" type="text" id="diag">
+                            <label class="mdl-textfield__label" for="diag">Diagnosis</label>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                    <h4 class="mdl-cell mdl-cell--12-col">Create</h4>
+                    <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                        <input class="setting-li mdl-list__item mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type="submit" id="form-submit" value="Create Patient" />
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</form>
