@@ -45,4 +45,13 @@ namespace DrDocx_Core.Models
 
         public int ID { get; set; }
     }
+    public struct PatientViewModel
+    {
+        public Patient Patient;
+        public List<DrDocx_Core.Models.TestGroup> TestGroups;
+        public List<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
+        public List<DrDocx_Core.Models.TestResult> TestResults;
+        public List<DrDocx_Core.Models.Test> Tests;
+        public List<DrDocx_Core.Models.TestResultGroup> TestResultGroups;
+    }
 }

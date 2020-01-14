@@ -5,22 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DrDocx_Core;
 using DrDocx_Core.Models;
-using System.IO;
-using System.Text.Json;
+using DrDocx_Core.ReportGen;
 
 namespace DrDocx_Core.Controllers
 {
-    public struct PatientViewModel
-    {
-        public Patient Patient;
-        public List<DrDocx_Core.Models.TestGroup> TestGroups;
-        public List<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
-        public List<DrDocx_Core.Models.TestResult> TestResults;
-        public List<DrDocx_Core.Models.Test> Tests;
-        public List<DrDocx_Core.Models.TestResultGroup> TestResultGroups;
-    }
 
     public class PatientsController : Controller
     {
@@ -235,7 +224,8 @@ namespace DrDocx_Core.Controllers
                 return NotFound();
             }
             var patient = await _context.Patients.FindAsync(patientId);
-            var link = await GeneratePatientReport(patient);
+            var reportGenerator = new ReportHandler(_context);
+            var link = await reportGenerator.GeneratePatientReport(patient);
             var net = new System.Net.WebClient();
             var data = net.DownloadData(link);
             var content = new System.IO.MemoryStream(data);
@@ -244,101 +234,6 @@ namespace DrDocx_Core.Controllers
             return File(content, contentType, fileName);
         }
 
-        private async Task<string> GeneratePatientReport(Patient patient)
-        {
-            // Create local report directory
-            var strippedPatientName = patient.Name.Replace(" ", "-");
-            var workingDir = Directory.CreateDirectory(@"./tmp/reports/patient-" + strippedPatientName);
-            string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName + "/DrDocx-Core/DrDocx-Core";
-            var reportGenDirectory = projectDirectory + "/report-gen";
-            var reportTemplatePath = reportGenDirectory + "/Report_Template.dotx";
-            var reportFileName = "Patient-" + strippedPatientName;
-            var reportPath = workingDir.Name + reportFileName;
-            var reportStaticPath = projectDirectory + "/wwwroot/reports" + reportFileName;
-            var visualizationsDirectory = reportGenDirectory + "/visualizations";
-
-            await Task.WhenAll(GenerateReportSansVisuals(patient, reportTemplatePath, reportPath), GenerateTestVisualizations(patient, workingDir, reportGenDirectory, visualizationsDirectory));
-            await CombineReportAndVisualizations(reportPath, visualizationsDirectory);
-            bool readyToDelete = await ServeGeneratedReportStatically(reportPath, reportStaticPath);
-            //workingDir.Delete(readyToDelete);
-            return reportStaticPath;
-        }
-
-        private async Task GenerateReportSansVisuals(Patient patient, string templatePath, string reportPath)
-        {
-            var v = new PatientViewModel
-            {
-                Patient = patient,
-                Tests = await _context.Tests.ToListAsync(),
-                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
-                TestGroups = await _context.TestGroups.ToListAsync(),
-                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
-                TestResults = await _context.TestResults.ToListAsync(),
-            };
-            var testGroups = patient.ResultGroups;
-            Dictionary<string, string> templateReplacements = new Dictionary<string, string>
-            {
-                { "NAME", patient.Name },
-                { "PREFERRED_NAME", patient.PreferredName },
-                { "MEDICATIONS", patient.Medications },
-                { "ADDRESS", patient.Address },
-                { "MEDICAL_RECORD_NUMBER", patient.MedicalRecordNumber.ToString() },
-                { "AGE_AT_TESTING", "19" }, // Hardcoded as calculation method does not yet exist
-                { "TEST_DATE", patient.DateOfTesting.ToString() },
-                { "DOB", patient.DateOfBirth.ToString() }
-            };
-
-            await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements, testGroups);
-        }
-
-        private async Task GenerateTestVisualizations(Patient patient, DirectoryInfo tmpDir, string reportGenDirectory, string visualizationsDir)
-        {
-            var v = new PatientViewModel
-            {
-                Patient = patient,
-                Tests = await _context.Tests.ToListAsync(),
-                TestGroupTests = await _context.TestGroupTests.ToListAsync(),
-                TestGroups = await _context.TestGroups.ToListAsync(),
-                TestResultGroups = await _context.TestResultGroups.ToListAsync(),
-                TestResults = await _context.TestResults.ToListAsync(),
-            };
-            var resultGroups = patient.ResultGroups;
-
-            var trgDict = new Dictionary<string, List<TestResult>>();
-            foreach (var trGroup in resultGroups)
-            {
-                trgDict.Add(trGroup.TestGroupInfo.Name, trGroup.Tests);
-            }
-            var serializeOptions = new JsonSerializerOptions { MaxDepth = 10 };
-            var output = JsonSerializer.Serialize<Dictionary<string, List<TestResult>>>(trgDict, serializeOptions);
-            var resultJsonPath = tmpDir.FullName + "/test-result-data.json";
-            System.IO.File.WriteAllText(resultJsonPath, output);
-
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "python.exe";
-            startInfo.WorkingDirectory = reportGenDirectory;
-            startInfo.Arguments = $"chartGen.py {resultJsonPath} {visualizationsDir}";
-            process.StartInfo = startInfo;
-            process.Start();
-        }
-
-        private async Task CombineReportAndVisualizations(string reportSansVisualsPath, string visualizationDir)
-        {
-            var imagesInVisualizationDir = Directory.GetFiles(visualizationDir, "*.png");
-            await ReportGen.ReportGen.CombineReportAndVisualizations(reportSansVisualsPath, imagesInVisualizationDir);
-        }
-
-        private async Task<bool> ServeGeneratedReportStatically(string reportGenPath, string reportStaticPath)
-        {
-            if (System.IO.File.Exists(reportStaticPath))
-            {
-                System.IO.File.Delete(reportStaticPath);
-            }
-            System.IO.File.Copy(reportGenPath, reportStaticPath);
-            
-            return true;
-        }
+        
     }
 }
