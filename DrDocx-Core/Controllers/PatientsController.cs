@@ -284,7 +284,8 @@ namespace DrDocx_Core.Controllers
                 { "ADDRESS", patient.Address },
                 { "MEDICAL_RECORD_NUMBER", patient.MedicalRecordNumber.ToString() },
                 { "AGE_AT_TESTING", "19" }, // Hardcoded as calculation method does not yet exist
-                { "TEST_DATE", patient.DateOfTesting.ToString() }
+                { "TEST_DATE", patient.DateOfTesting.ToString() },
+                { "DOB", patient.DateOfBirth.ToString() }
             };
 
             await ReportGen.ReportGen.GenerateReport(patient, templatePath, reportPath, templateReplacements, testGroups);
