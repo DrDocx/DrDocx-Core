@@ -226,7 +226,7 @@
                                         <form asp-controller="Patients" asp-action="AddTest" asp-route-testResultGroupId="@testResultGroup.Id">
                                         <input type="hidden" name="patientId" value="@patient.Id" />
                                         <td>
-                                        <select name="testId" class="mdl-button mdl-button--raised " id="new-test-group">
+                                        <select style="width: 75px;" name="testId" class="mdl-button mdl-button--raised " id="new-test-group">
                                             @foreach (var newTest in possibleNewTests)
                                             {
                                                 <option value="@newTest.Id">@Html.DisplayFor(modelItem => newTest.Name)</option>
