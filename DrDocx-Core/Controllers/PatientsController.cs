@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrDocx_Core;
-using DrDocx_Core.Models;
+using DrDocxModels;
 using System.IO;
 using System.Text.Json;
 
@@ -15,11 +15,11 @@ namespace DrDocx_Core.Controllers
     public struct PatientViewModel
     {
         public Patient Patient;
-        public List<DrDocx_Core.Models.TestGroup> TestGroups;
-        public List<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
-        public List<DrDocx_Core.Models.TestResult> TestResults;
-        public List<DrDocx_Core.Models.Test> Tests;
-        public List<DrDocx_Core.Models.TestResultGroup> TestResultGroups;
+        public List<TestGroup> TestGroups;
+        public List<TestGroupTest> TestGroupTests;
+        public List<TestResult> TestResults;
+        public List<Test> Tests;
+        public List<TestResultGroup> TestResultGroups;
     }
 
     public class PatientsController : Controller

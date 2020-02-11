@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrDocx_Core;
-using DrDocx_Core.Models;
+using DrDocxModels;
 
 namespace DrDocx_Core.Controllers
 {

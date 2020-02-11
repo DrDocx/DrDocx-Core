@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using DrDocx_Core.Models;
+using DrDocxModels;
 
 namespace DrDocx_Core
 {

@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrDocx_Core;
-using DrDocx_Core.Models;
+using DrDocxModels;
 
 namespace DrDocx_Core.Controllers
 {
     public class HomeViewModel
     {
-        public IEnumerable<DrDocx_Core.Models.Patient> Patients;
-        public IEnumerable<DrDocx_Core.Models.TestGroup> TestGroups;
-        public IEnumerable<DrDocx_Core.Models.TestGroupTest> TestGroupTests;
-        public IEnumerable<DrDocx_Core.Models.Test> Tests;
+        public IEnumerable<DrDocxModels.Patient> Patients;
+        public IEnumerable<DrDocxModels.TestGroup> TestGroups;
+        public IEnumerable<DrDocxModels.TestGroupTest> TestGroupTests;
+        public IEnumerable<DrDocxModels.Test> Tests;
     }
 
     public class HomeController : Controller
