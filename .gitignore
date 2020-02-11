@@ -1,7 +1,10 @@
-
-.vs/slnx.sqlite
+.vs/
+bin/
+obj/
 *.exe
 *.db-wal
 *.db-shm
 *.db-shm
 *.db
+.DS_Store
+wwwroot/reports*
